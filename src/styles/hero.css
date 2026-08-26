@@ -1,0 +1,152 @@
+.hero {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 32px;
+}
+
+.hero-title {
+  font-size: clamp(34px, 7vw, 68px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  color: var(--accent);
+  animation: heroIn 0.9s ease both;
+}
+
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+.hero-couple {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 5vw, 56px);
+  margin-top: 48px;
+}
+
+.hero-avatar {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  animation: heroIn 0.9s 0.15s ease both;
+}
+
+.hero-avatar > span,
+.hero-avatar > img {
+  width: clamp(110px, 22vw, 150px);
+  height: clamp(110px, 22vw, 150px);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: clamp(48px, 10vw, 64px);
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(43, 45, 66, 0.12);
+}
+
+.hero-avatar.groom > span {
+  background: linear-gradient(150deg, #cfe0ff, #b4c9ff);
+}
+
+.hero-avatar.bride > span {
+  background: linear-gradient(150deg, #ffd6e5, #ffbcd4);
+}
+
+.hero-avatar figcaption {
+  font-size: clamp(18px, 3vw, 24px);
+  font-weight: 500;
+}
+
+.hero-hearts {
+  display: grid;
+  gap: 2px;
+  font-size: clamp(20px, 4vw, 30px);
+}
+
+.hero-hearts span:first-child {
+  animation: floaty 2.4s ease-in-out infinite;
+}
+
+.hero-hearts span:last-child {
+  animation: floaty 2.4s 0.5s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.12);
+  }
+}
+
+.hero-sub {
+  max-width: 520px;
+  margin-top: 34px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 34px;
+}
+
+.btn {
+  padding: 15px 32px;
+  border-radius: 999px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(232, 23, 93, 0.28);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(232, 23, 93, 0.34);
+}
+
+.btn-ghost {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-ghost:hover {
+  transform: translateY(-2px);
+}
+
+.hero-scroll {
+  margin-top: 58px;
+  border: none;
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: 13px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  cursor: pointer;
+}
+
+.hero-arrow {
+  font-size: 18px;
+  animation: floaty 1.8s ease-in-out infinite;
+}
