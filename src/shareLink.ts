@@ -1,15 +1,5 @@
 import type { WeddingConfig } from './store'
 
-function encodeBase64UTF8(str: string): string {
-  const utf8Bytes = new TextEncoder().encode(str)
-  let binary = ''
-  for (let i = 0; i < utf8Bytes.byteLength; i++) {
-    binary += String.fromCharCode(utf8Bytes[i])
-  }
-  // base64url: an toàn khi đặt trong query string (không có + / =)
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-}
-
 function decodeBase64UTF8(str: string): string {
   const base64 = str.replace(/-/g, '+').replace(/_/g, '/')
   const binary = atob(base64)
@@ -20,29 +10,31 @@ function decodeBase64UTF8(str: string): string {
   return new TextDecoder().decode(bytes)
 }
 
-export function buildShareUrl(config: WeddingConfig): string {
-  const json = JSON.stringify(config)
-  const encoded = encodeBase64UTF8(json)
-  const baseUrl = window.location.origin + window.location.pathname
-  return `${baseUrl}?shared=true&config=${encoded}`
+/**
+ * Link chia sẻ ngắn và cố định: chỉ chứa slug, còn cấu hình nằm trên server.
+ * Chủ thiệp sửa /config rồi bấm "Lưu & phát hành" là mọi người mở lại link cũ
+ * sẽ thấy nội dung mới, không cần gửi lại link.
+ */
+export function buildShareUrl(configId: string): string {
+  // Luôn trỏ về gốc site, kể cả khi đang đứng ở /config.
+  return `${window.location.origin}/?id=${encodeURIComponent(configId)}`
 }
 
-export function getSharedConfig(): WeddingConfig | null {
+/**
+ * Giải mã link chia sẻ kiểu cũ (?shared=true&config=<base64>) để những link đã
+ * gửi đi trước đây vẫn mở được.
+ */
+export function getLegacySharedConfig(): Partial<WeddingConfig> | null {
   const params = new URLSearchParams(window.location.search)
-  const isShared = params.get('shared') === 'true'
+  if (params.get('shared') !== 'true') return null
+
   const configStr = params.get('config')
-  if (!isShared || !configStr) return null
+  if (!configStr) return null
+
   try {
-    const decoded = decodeBase64UTF8(configStr)
-    const partial = JSON.parse(decoded)
-    return partial as WeddingConfig
+    return JSON.parse(decodeBase64UTF8(configStr)) as Partial<WeddingConfig>
   } catch (e) {
-    console.error('Failed to decode shared config:', e)
+    console.error('Không giải mã được link chia sẻ cũ:', e)
     return null
   }
-}
-
-export function isSharedMode(): boolean {
-  const params = new URLSearchParams(window.location.search)
-  return params.get('shared') === 'true'
 }

@@ -53,3 +53,58 @@ select,
 textarea {
   font: inherit;
 }
+
+/* Màn hình chờ / báo lỗi khi tải thiệp từ server */
+.boot-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  background: #fff5f7;
+  color: #4a2c36;
+  font-family: inherit;
+}
+
+.boot-screen h1 {
+  font-size: 56px;
+  margin: 0;
+}
+
+.boot-screen p {
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.boot-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(232, 23, 93, 0.2);
+  border-top-color: #e8175d;
+  border-radius: 50%;
+  animation: boot-spin 0.9s linear infinite;
+}
+
+@keyframes boot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.boot-btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  background: #e8175d;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.boot-btn:hover {
+  background: #c01745;
+}

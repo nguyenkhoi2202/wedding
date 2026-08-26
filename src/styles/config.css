@@ -514,3 +514,10 @@
     align-items: flex-start;
   }
 }
+
+/* Thông báo lỗi đồng bộ với server */
+.cfg-sync-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #c01745;
+}

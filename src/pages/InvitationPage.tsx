@@ -8,7 +8,7 @@ import Album from '../sections/Album'
 import Rsvp from '../sections/Rsvp'
 import { useConfigStore } from '../store'
 import { useReveal } from '../hooks/useReveal'
-import { isSharedMode } from '../shareLink'
+import { isGuest } from '../viewMode'
 
 import '../styles/layout.css'
 import '../styles/hero.css'
@@ -22,7 +22,7 @@ export default function InvitationPage() {
   const { config } = useConfigStore()
   const [searchParams] = useSearchParams()
   const isPreview = searchParams.has('preview')
-  const isShared = isSharedMode()
+  const isShared = isGuest
 
   useReveal([config])
 

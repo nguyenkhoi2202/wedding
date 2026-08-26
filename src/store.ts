@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
+import { isGuest } from './viewMode'
 
 export interface TimelineItem {
   id: string
@@ -156,24 +157,69 @@ export const defaultConfig: WeddingConfig = {
   backgroundColor: '#FFF5F7',
 }
 
+/** Slug mặc định cho link chia sẻ, đổi được trong /config → tab Chia sẻ. */
+export const DEFAULT_CONFIG_ID = 'thiep-cuoi'
+
 interface ConfigStore {
   config: WeddingConfig
+  /** Slug dùng cho link chia sẻ và cho khoá lưu trên server. */
+  configId: string
+  /** Mốc thời gian lần sửa cuối, để đồng bộ giữa các máy theo kiểu mới-thắng. */
+  updatedAt: number
   updateConfig: (updates: Partial<WeddingConfig>) => void
   resetConfig: () => void
-  replaceConfig: (config: WeddingConfig) => void
+  replaceConfig: (config: Partial<WeddingConfig>) => void
+  setConfigId: (id: string) => void
+  /** Nhận cấu hình từ server: giữ đúng mốc thời gian của server, không bump. */
+  adoptRemoteConfig: (config: Partial<WeddingConfig>, updatedAt: number) => void
+  /**
+   * Ghi nhận đã đẩy lên server thành công. Chỉ đổi updatedAt, giữ nguyên object
+   * config để không kích hoạt lại vòng tự lưu.
+   */
+  markSynced: (updatedAt: number) => void
 }
+
+/**
+ * Khách xem link chia sẻ thì không được ghi vào localStorage của máy họ, tránh
+ * việc mở link của người khác làm mất bản nháp thiệp của chính họ.
+ */
+const guestAwareStorage = createJSONStorage(() => ({
+  getItem: (name: string) => (isGuest ? null : localStorage.getItem(name)),
+  setItem: (name: string, value: string) => {
+    if (!isGuest) localStorage.setItem(name, value)
+  },
+  removeItem: (name: string) => {
+    if (!isGuest) localStorage.removeItem(name)
+  },
+}))
 
 export const useConfigStore = create<ConfigStore>()(
   persist(
     (set) => ({
       config: defaultConfig,
+      configId: DEFAULT_CONFIG_ID,
+      updatedAt: 0,
       updateConfig: (updates) =>
-        set((state) => ({ config: { ...state.config, ...updates } })),
-      resetConfig: () => set({ config: defaultConfig }),
-      replaceConfig: (config) => set({ config: { ...defaultConfig, ...config } }),
+        set((state) => ({
+          config: { ...state.config, ...updates },
+          updatedAt: Date.now(),
+        })),
+      resetConfig: () => set({ config: defaultConfig, updatedAt: Date.now() }),
+      replaceConfig: (config) =>
+        set({ config: { ...defaultConfig, ...config }, updatedAt: Date.now() }),
+      setConfigId: (id) => set({ configId: id || DEFAULT_CONFIG_ID }),
+      adoptRemoteConfig: (config, updatedAt) =>
+        set({ config: { ...defaultConfig, ...config }, updatedAt }),
+      markSynced: (updatedAt) => set({ updatedAt }),
     }),
     {
       name: 'wedding-web-config',
+      storage: guestAwareStorage,
+      partialize: (state) => ({
+        config: state.config,
+        configId: state.configId,
+        updatedAt: state.updatedAt,
+      }),
       merge: (persisted, current) => ({
         ...current,
         ...(persisted as object),
