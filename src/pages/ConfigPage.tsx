@@ -2,16 +2,21 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   useConfigStore,
-  compressImage,
   defaultConfig,
   type TimelineItem,
   type WeddingConfig,
 } from '../store'
-import { buildShareUrl } from '../shareLink'
+import { buildShareUrl, isSharedMode } from '../shareLink'
+import { uploadImageToCloudinary } from '../cloudinary'
 import '../styles/layout.css'
 import '../styles/config.css'
 
 type TabId = 'couple' | 'event' | 'venue' | 'timeline' | 'album' | 'gift' | 'email' | 'theme'
+
+interface ShareModalState {
+  open: boolean
+  link: string
+}
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'couple', label: '💕 Cô dâu chú rể' },
@@ -28,7 +33,15 @@ export default function ConfigPage() {
   const { config, updateConfig, resetConfig, replaceConfig } = useConfigStore()
   const [tab, setTab] = useState<TabId>('couple')
   const [toast, setToast] = useState('')
+  const [shareModal, setShareModal] = useState<ShareModalState>({ open: false, link: '' })
   const importRef = useRef<HTMLInputElement>(null)
+  const shared = isSharedMode()
+
+  // Trang cấu hình chỉ dành cho chủ thiệp: cần mật khẩu khi truy cập trực tiếp.
+  // Link chia sẻ (shared=true) là chế độ chỉ xem nên bỏ qua bước này.
+  const [authed, setAuthed] = useState(() => shared || sessionStorage.getItem('cfg-authed') === '1')
+  const [passInput, setPassInput] = useState('')
+  const [passError, setPassError] = useState(false)
 
   const set = <K extends keyof WeddingConfig>(key: K, value: WeddingConfig[K]) =>
     updateConfig({ [key]: value } as Partial<WeddingConfig>)
@@ -46,9 +59,13 @@ export default function ConfigPage() {
     e.target.value = ''
     if (!file) return
     try {
-      set(key, await compressImage(file, key === 'qrCode' ? 700 : 900))
-    } catch {
-      flash('Không đọc được ảnh')
+      flash('Đang upload ảnh lên Cloudinary...')
+      const cloudinaryUrl = await uploadImageToCloudinary(file)
+      set(key, cloudinaryUrl)
+      flash('✓ Upload ảnh thành công')
+    } catch (error) {
+      console.error('Upload error:', error)
+      flash('Không upload được ảnh')
     }
   }
 
@@ -57,11 +74,13 @@ export default function ConfigPage() {
     e.target.value = ''
     if (!files.length) return
     try {
-      const next = await Promise.all(files.map((f) => compressImage(f)))
-      set('album', [...config.album, ...next])
-      flash(`Đã thêm ${next.length} ảnh`)
-    } catch {
-      flash('Có ảnh không tải được')
+      flash(`Đang upload ${files.length} ảnh lên Cloudinary...`)
+      const urls = await Promise.all(files.map(f => uploadImageToCloudinary(f)))
+      set('album', [...config.album, ...urls])
+      flash(`✓ Đã thêm ${urls.length} ảnh`)
+    } catch (error) {
+      console.error('Upload error:', error)
+      flash('Có ảnh không upload được')
     }
   }
 
@@ -112,39 +131,88 @@ export default function ConfigPage() {
     }
   }
 
-  const copyShare = async () => {
-    await navigator.clipboard.writeText(buildShareUrl(config))
-    flash('Đã copy link chia sẻ (không gồm ảnh)')
+  const copyShare = () => {
+    const link = buildShareUrl(config)
+    setShareModal({ open: true, link })
+  }
+
+  if (!shared && !authed) {
+    return (
+      <div className="cfg-page">
+        <div className="cfg-card cfg-gate">
+          <h2>🔒 Khu vực cấu hình</h2>
+          <p className="cfg-hint">Nhập mật khẩu để vào chỉnh sửa thiệp.</p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (passInput === 'khoitn') {
+                sessionStorage.setItem('cfg-authed', '1')
+                setAuthed(true)
+              } else {
+                setPassError(true)
+              }
+            }}
+          >
+            <div className="cfg-field">
+              <input
+                type="password"
+                value={passInput}
+                autoFocus
+                placeholder="Mật khẩu"
+                onChange={(e) => {
+                  setPassInput(e.target.value)
+                  setPassError(false)
+                }}
+              />
+            </div>
+            {passError && (
+              <p style={{ color: '#c01745', fontSize: 13, marginBottom: 12 }}>
+                Sai mật khẩu, vui lòng thử lại.
+              </p>
+            )}
+            <button type="submit" className="cfg-btn primary" style={{ width: '100%' }}>
+              Vào cấu hình
+            </button>
+          </form>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="cfg-page">
       <header className="cfg-top">
         <div>
-          <h1>Cấu hình thiệp cưới</h1>
-          <p>Mọi thay đổi lưu tự động vào trình duyệt này.</p>
+          <h1>Cấu hình thiệp cưới {shared && <span className="shared-badge">👁️ Chỉ xem</span>}</h1>
+          <p>{shared ? '📌 Đây là link chia sẻ - bạn chỉ có thể xem, không thể chỉnh sửa.' : 'Mọi thay đổi lưu tự động vào trình duyệt này.'}</p>
         </div>
         <div className="cfg-top-actions">
-          <button className="cfg-btn ghost" onClick={exportJson}>
-            ⬇️ Xuất JSON
-          </button>
-          <button className="cfg-btn ghost" onClick={() => importRef.current?.click()}>
-            ⬆️ Nhập JSON
-          </button>
+          {!shared && (
+            <>
+              <button className="cfg-btn ghost" onClick={exportJson}>
+                ⬇️ Xuất JSON
+              </button>
+              <button className="cfg-btn ghost" onClick={() => importRef.current?.click()}>
+                ⬆️ Nhập JSON
+              </button>
+            </>
+          )}
           <button className="cfg-btn ghost" onClick={copyShare}>
             🔗 Copy link
           </button>
-          <button
-            className="cfg-btn danger"
-            onClick={() => {
-              if (confirm('Đặt lại toàn bộ về mặc định?')) {
-                resetConfig()
-                flash('Đã đặt lại')
-              }
-            }}
-          >
-            Đặt lại
-          </button>
+          {!shared && (
+            <button
+              className="cfg-btn danger"
+              onClick={() => {
+                if (confirm('Đặt lại toàn bộ về mặc định?')) {
+                  resetConfig()
+                  flash('Đã đặt lại')
+                }
+              }}
+            >
+              Đặt lại
+            </button>
+          )}
           <Link className="cfg-btn primary" to="/">
             Xem thiệp →
           </Link>
@@ -176,46 +244,50 @@ export default function ConfigPage() {
             <section className="cfg-card">
               <h2>Chú rể</h2>
               <div className="cfg-grid-2">
-                <TextField cfg={config} set={set} label="Tên gọi ngắn" field="groomName" />
-                <TextField cfg={config} set={set} label="Họ tên đầy đủ" field="groomFullName" />
-                <TextField cfg={config} set={set} label="Vai (Chú Rể)" field="groomRole" />
-                <TextField cfg={config} set={set} label="Thứ tự trong gia đình" field="groomOrder" />
-                <TextField cfg={config} set={set} label="Tên cha" field="groomFather" />
-                <TextField cfg={config} set={set} label="Tên mẹ" field="groomMother" />
-                <TextField cfg={config} set={set} label="Quê / nơi sống" field="groomHometown" />
+                <TextField cfg={config} set={set} label="Tên gọi ngắn" field="groomName" disabled={shared} />
+                <TextField cfg={config} set={set} label="Họ tên đầy đủ" field="groomFullName" disabled={shared} />
+                <TextField cfg={config} set={set} label="Vai (Chú Rể)" field="groomRole" disabled={shared} />
+                <TextField cfg={config} set={set} label="Thứ tự trong gia đình" field="groomOrder" disabled={shared} />
+                <TextField cfg={config} set={set} label="Tên cha" field="groomFather" disabled={shared} />
+                <TextField cfg={config} set={set} label="Tên mẹ" field="groomMother" disabled={shared} />
+                <TextField cfg={config} set={set} label="Quê / nơi sống" field="groomHometown" disabled={shared} />
               </div>
-              <ImageField
-                label="Ảnh chú rể"
-                value={config.groomImage}
-                onPick={(e) => pickImage(e, 'groomImage')}
-                onClear={() => set('groomImage', '')}
-              />
+              {!shared && (
+                <ImageField
+                  label="Ảnh chú rể"
+                  value={config.groomImage}
+                  onPick={(e) => pickImage(e, 'groomImage')}
+                  onClear={() => set('groomImage', '')}
+                />
+              )}
             </section>
 
             <section className="cfg-card">
               <h2>Cô dâu</h2>
               <div className="cfg-grid-2">
-                <TextField cfg={config} set={set} label="Tên gọi ngắn" field="brideName" />
-                <TextField cfg={config} set={set} label="Họ tên đầy đủ" field="brideFullName" />
-                <TextField cfg={config} set={set} label="Vai (Cô Dâu)" field="brideRole" />
-                <TextField cfg={config} set={set} label="Thứ tự trong gia đình" field="brideOrder" />
-                <TextField cfg={config} set={set} label="Tên cha" field="brideFather" />
-                <TextField cfg={config} set={set} label="Tên mẹ" field="brideMother" />
-                <TextField cfg={config} set={set} label="Quê / nơi sống" field="brideHometown" />
+                <TextField cfg={config} set={set} label="Tên gọi ngắn" field="brideName" disabled={shared} />
+                <TextField cfg={config} set={set} label="Họ tên đầy đủ" field="brideFullName" disabled={shared} />
+                <TextField cfg={config} set={set} label="Vai (Cô Dâu)" field="brideRole" disabled={shared} />
+                <TextField cfg={config} set={set} label="Thứ tự trong gia đình" field="brideOrder" disabled={shared} />
+                <TextField cfg={config} set={set} label="Tên cha" field="brideFather" disabled={shared} />
+                <TextField cfg={config} set={set} label="Tên mẹ" field="brideMother" disabled={shared} />
+                <TextField cfg={config} set={set} label="Quê / nơi sống" field="brideHometown" disabled={shared} />
               </div>
-              <ImageField
-                label="Ảnh cô dâu"
-                value={config.brideImage}
-                onPick={(e) => pickImage(e, 'brideImage')}
-                onClear={() => set('brideImage', '')}
-              />
+              {!shared && (
+                <ImageField
+                  label="Ảnh cô dâu"
+                  value={config.brideImage}
+                  onPick={(e) => pickImage(e, 'brideImage')}
+                  onClear={() => set('brideImage', '')}
+                />
+              )}
             </section>
 
             <section className="cfg-card">
               <h2>Trang chủ</h2>
-              <TextField cfg={config} set={set} label="Tiêu đề lớn" field="heroTitle" />
-              <TextField cfg={config} set={set} label="Câu phụ dưới tên" field="heroSubtitle" rows={2} />
-              <TextField cfg={config} set={set} label="Câu đối / lời chúc" field="coupleQuote" rows={3} />
+              <TextField cfg={config} set={set} label="Tiêu đề lớn" field="heroTitle" disabled={shared} />
+              <TextField cfg={config} set={set} label="Câu phụ dưới tên" field="heroSubtitle" rows={2} disabled={shared} />
+              <TextField cfg={config} set={set} label="Câu đối / lời chúc" field="coupleQuote" rows={3} disabled={shared} />
             </section>
           </>
         )}
@@ -223,34 +295,35 @@ export default function ConfigPage() {
         {tab === 'event' && (
           <section className="cfg-card">
             <h2>Thông tin lễ cưới</h2>
-            <TextField cfg={config} set={set} label="Lời dẫn đầu mục thiệp" field="invitationIntro" rows={2} />
+            <TextField cfg={config} set={set} label="Lời dẫn đầu mục thiệp" field="invitationIntro" rows={2} disabled={shared} />
             <div className="cfg-grid-2">
-              <TextField cfg={config} set={set} label="Nhãn sự kiện" field="eventBadge" placeholder="Ngày Nhà Gái" />
-              <TextField cfg={config} set={set} label="Ngày (dd/mm/yyyy)" field="eventDate" placeholder="03/05/2026" />
-              <TextField cfg={config} set={set} label="Giờ (HH:mm)" field="eventTime" placeholder="11:00" />
-              <TextField cfg={config} set={set} label="Thứ" field="eventWeekday" placeholder="Chủ Nhật" />
+              <TextField cfg={config} set={set} label="Nhãn sự kiện" field="eventBadge" placeholder="Ngày Nhà Gái" disabled={shared} />
+              <TextField cfg={config} set={set} label="Ngày (dd/mm/yyyy)" field="eventDate" placeholder="03/05/2026" disabled={shared} />
+              <TextField cfg={config} set={set} label="Giờ (HH:mm)" field="eventTime" placeholder="11:00" disabled={shared} />
+              <TextField cfg={config} set={set} label="Thứ" field="eventWeekday" placeholder="Chủ Nhật" disabled={shared} />
             </div>
-            <TextField cfg={config} set={set} label="Ngày âm lịch" field="eventLunarDate" />
+            <TextField cfg={config} set={set} label="Ngày âm lịch" field="eventLunarDate" disabled={shared} />
             <h2 className="cfg-sub">Nhà trai / nhà gái</h2>
-            <TextField cfg={config} set={set} label="Địa chỉ nhà trai" field="groomHouseAddress" rows={2} />
-            <TextField cfg={config} set={set} label="Địa chỉ nhà gái" field="brideHouseAddress" rows={2} />
+            <TextField cfg={config} set={set} label="Địa chỉ nhà trai" field="groomHouseAddress" rows={2} disabled={shared} />
+            <TextField cfg={config} set={set} label="Địa chỉ nhà gái" field="brideHouseAddress" rows={2} disabled={shared} />
             <h2 className="cfg-sub">Lời mời</h2>
-            <TextField cfg={config} set={set} label="Kính mời" field="guestName" placeholder="Quý khách" />
-            <TextField cfg={config} set={set} label="Câu mời" field="invitationMessage" rows={2} />
+            <TextField cfg={config} set={set} label="Kính mời" field="guestName" placeholder="Quý khách" disabled={shared} />
+            <TextField cfg={config} set={set} label="Câu mời" field="invitationMessage" rows={2} disabled={shared} />
           </section>
         )}
 
         {tab === 'venue' && (
           <section className="cfg-card">
             <h2>Địa điểm tiệc</h2>
-            <TextField cfg={config} set={set} label="Tên nhà hàng" field="venueName" />
-            <TextField cfg={config} set={set} label="Địa chỉ" field="venueAddress" rows={2} />
+            <TextField cfg={config} set={set} label="Tên nhà hàng" field="venueName" disabled={shared} />
+            <TextField cfg={config} set={set} label="Địa chỉ" field="venueAddress" rows={2} disabled={shared} />
             <TextField
               cfg={config}
               set={set}
               label="Link Google Maps (bỏ trống sẽ tự tìm theo địa chỉ)"
               field="venueMapUrl"
               placeholder="https://maps.app.goo.gl/..."
+              disabled={shared}
             />
             <TextField
               cfg={config}
@@ -258,11 +331,12 @@ export default function ConfigPage() {
               label="Ghi chú (mỗi dòng một gạch đầu dòng)"
               field="venueNotes"
               rows={4}
+              disabled={shared}
             />
           </section>
         )}
 
-        {tab === 'timeline' && (
+        {tab === 'timeline' && !shared && (
           <section className="cfg-card">
             <div className="cfg-card-head">
               <h2>Lịch trình hôn lễ</h2>
@@ -349,7 +423,7 @@ export default function ConfigPage() {
           </section>
         )}
 
-        {tab === 'album' && (
+        {tab === 'album' && !shared && (
           <section className="cfg-card">
             <div className="cfg-card-head">
               <h2>Album ảnh cưới ({config.album.length})</h2>
@@ -521,6 +595,56 @@ export default function ConfigPage() {
       </div>
 
       {toast && <div className="cfg-toast">{toast}</div>}
+
+      {shareModal.open && (
+        <div className="share-modal-overlay" onClick={() => setShareModal({ open: false, link: '' })}>
+          <div className="share-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="share-modal-close" onClick={() => setShareModal({ open: false, link: '' })}>
+              ✕
+            </button>
+            <h2>🔗 Chia sẻ thiệp cưới</h2>
+            <p className="share-modal-note">
+              ✓ Link này <strong>gồm toàn bộ cấu hình và ảnh từ Cloudinary</strong>. Người nhận chỉ xem được thiệp (không chỉnh sửa được).
+            </p>
+            <div className="share-modal-link">
+              <input
+                type="text"
+                readOnly
+                value={shareModal.link}
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+              />
+              <button
+                className="cfg-btn primary"
+                onClick={() => {
+                  navigator.clipboard.writeText(shareModal.link).then(() => {
+                    flash('✓ Đã copy vào clipboard')
+                    setTimeout(() => setShareModal({ open: false, link: '' }), 1000)
+                  })
+                }}
+              >
+                📋 Copy
+              </button>
+            </div>
+            <div className="share-modal-preview">
+              <p><strong>Sao chép link:</strong></p>
+              <button
+                className="cfg-btn primary"
+                style={{ width: '100%', marginTop: '8px' }}
+                onClick={() => {
+                  navigator.clipboard.writeText(shareModal.link).then(() => {
+                    flash('✓ Đã copy vào clipboard')
+                    setTimeout(() => setShareModal({ open: false, link: '' }), 1000)
+                  }).catch(() => {
+                    flash('Không copy được, vui lòng copy thủ công')
+                  })
+                }}
+              >
+                📋 Copy Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -568,6 +692,7 @@ function TextField({
   field,
   placeholder,
   rows,
+  disabled,
 }: {
   cfg: WeddingConfig
   set: <K extends keyof WeddingConfig>(key: K, value: WeddingConfig[K]) => void
@@ -575,6 +700,7 @@ function TextField({
   field: keyof WeddingConfig
   placeholder?: string
   rows?: number
+  disabled?: boolean
 }) {
   const value = String(cfg[field] ?? '')
   return (
@@ -586,12 +712,14 @@ function TextField({
           value={value}
           placeholder={placeholder}
           onChange={(e) => set(field, e.target.value as never)}
+          disabled={disabled}
         />
       ) : (
         <input
           value={value}
           placeholder={placeholder}
           onChange={(e) => set(field, e.target.value as never)}
+          disabled={disabled}
         />
       )}
     </label>
