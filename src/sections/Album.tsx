@@ -4,6 +4,8 @@ import { useConfigStore } from '../store'
 export default function Album() {
   const { config } = useConfigStore()
   const [index, setIndex] = useState<number | null>(null)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({})
   const photos = config.album
 
   const close = useCallback(() => setIndex(null), [])
@@ -28,6 +30,23 @@ export default function Album() {
     }
   }, [index, close, step])
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return
+    const touchEnd = e.changedTouches[0].clientX
+    const distance = touchStart - touchEnd
+    if (distance > 50) step(1)
+    if (distance < -50) step(-1)
+    setTouchStart(null)
+  }
+
+  const handleImageLoad = (src: string) => {
+    setLoadedImages(prev => ({ ...prev, [src]: true }))
+  }
+
   return (
     <section id="album" className="section">
       <div className="section-head reveal">
@@ -42,16 +61,28 @@ export default function Album() {
         </p>
       ) : (
         <div className="album-grid reveal">
-          {photos.map((src, i) => (
-            <button key={i} className="album-cell" onClick={() => setIndex(i)}>
-              <img src={src} alt={`Ảnh cưới ${i + 1}`} loading="lazy" />
+          {photos.map((src) => (
+            <button key={src} className="album-cell" onClick={() => setIndex(photos.indexOf(src))}>
+              {!loadedImages[src] && <div className="image-skeleton" />}
+              <img 
+                src={src} 
+                alt="Ảnh cưới" 
+                loading="lazy" 
+                onLoad={() => handleImageLoad(src)}
+                style={{ opacity: loadedImages[src] ? 1 : 0, transition: 'opacity 0.3s ease' }}
+              />
             </button>
           ))}
         </div>
       )}
 
       {index !== null && (
-        <div className="lightbox" onClick={close}>
+        <div 
+          className="lightbox fade-in" 
+          onClick={close}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <button className="lb-close" onClick={close} aria-label="Đóng">
             ✕
           </button>
@@ -66,7 +97,8 @@ export default function Album() {
             ‹
           </button>
           <img
-            className="lb-image"
+            key={photos[index]}
+            className="lb-image fade-image"
             src={photos[index]}
             alt={`Ảnh cưới ${index + 1}`}
             onClick={(e) => e.stopPropagation()}

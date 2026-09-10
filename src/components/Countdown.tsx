@@ -17,6 +17,7 @@ const UNITS = [
 export default function Countdown() {
   const { config } = useConfigStore()
   const [left, setLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [prevLeft, setPrevLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const [done, setDone] = useState(false)
 
   useEffect(() => {
@@ -30,11 +31,14 @@ export default function Countdown() {
         return
       }
       setDone(false)
-      setLeft({
-        days: Math.floor(diff / 86400000),
-        hours: Math.floor((diff % 86400000) / 3600000),
-        minutes: Math.floor((diff % 3600000) / 60000),
-        seconds: Math.floor((diff % 60000) / 1000),
+      setLeft(prev => {
+        setPrevLeft(prev)
+        return {
+          days: Math.floor(diff / 86400000),
+          hours: Math.floor((diff % 86400000) / 3600000),
+          minutes: Math.floor((diff % 3600000) / 60000),
+          seconds: Math.floor((diff % 60000) / 1000),
+        }
       })
     }
 
@@ -44,7 +48,7 @@ export default function Countdown() {
   }, [config.eventDate, config.eventTime])
 
   return (
-    <div className="countdown-block reveal">
+    <div className={`countdown-block reveal ${done ? 'celebration' : ''}`}>
       <div className="section-head">
         <h2>Đếm Ngược Tới Ngày Vui</h2>
         <div className="section-rule" />
@@ -52,22 +56,29 @@ export default function Countdown() {
       </div>
 
       <div className="card countdown-card">
-        <span className="countdown-badge">{config.eventBadge}</span>
+        <span className="countdown-badge pulse-badge">{config.eventBadge}</span>
         <p className="countdown-date">
           {config.eventWeekday}, {config.eventDate}
         </p>
 
         <div className="countdown-grid">
-          {UNITS.map((u) => (
-            <div key={u.key} className={`countdown-tile ${u.cls}`}>
-              <strong>{String(left[u.key]).padStart(2, '0')}</strong>
-              <small>{u.label}</small>
-            </div>
-          ))}
+          {UNITS.map((u) => {
+            const currentVal = left[u.key as keyof typeof left]
+            const prevVal = prevLeft[u.key as keyof typeof prevLeft]
+            const isFlipping = currentVal !== prevVal
+            return (
+              <div key={u.key} className={`countdown-tile flip-container ${u.cls}`}>
+                <div className={`flip-card ${isFlipping ? 'flipping' : ''}`}>
+                  <strong>{String(currentVal).padStart(2, '0')}</strong>
+                </div>
+                <small>{u.label}</small>
+              </div>
+            )
+          })}
         </div>
 
         <p className="countdown-note">
-          {done ? 'Khoảnh khắc hạnh phúc đã đến!' : 'Hẹn gặp Quý Khách trong ngày vui!'}
+          {done ? '✨ Khoảnh khắc hạnh phúc đã đến! ✨' : 'Hẹn gặp Quý Khách trong ngày vui!'}
         </p>
       </div>
     </div>

@@ -18,7 +18,7 @@ export default function Venue() {
       </div>
 
       <article className="venue-card reveal">
-        <span className="venue-icon">🥂</span>
+        <span className="venue-icon bounce">📍</span>
         <h3>{config.eventBadge}</h3>
         <div className="section-rule" />
 
@@ -44,28 +44,29 @@ export default function Venue() {
         )}
 
         <a className="btn btn-map" href={mapUrl} target="_blank" rel="noreferrer">
-          📍 Xem Bản Đồ
+          🗺️ Xem Bản Đồ
         </a>
       </article>
 
-      <div className="invite-note reveal">
+      <div className="invite-note reveal animated-envelope">
+        <div className="envelope-flap"></div>
         <h4>💌 Lời Mời</h4>
         <p>{config.invitationIntro}</p>
         <div className="invite-note-inner">
-          <p>Trân trọng kính mời: {config.guestName}</p>
+          <p>Trân trọng kính mời: <strong>{config.guestName}</strong></p>
           <p>{config.invitationMessage}</p>
         </div>
       </div>
 
-      <div className="timeline-block reveal">
-        <div className="section-head">
+      <div className="timeline-block">
+        <div className="section-head reveal">
           <h2>Lịch Trình Hôn Lễ</h2>
           <div className="section-rule" />
         </div>
 
         <ol className="timeline">
           {config.timeline.map((item, i) => (
-            <li key={item.id} className={`timeline-row ${i % 2 ? 'left' : 'right'}`}>
+            <li key={item.id} className={`timeline-row reveal fade-slide-up ${i % 2 ? 'left' : 'right'}`} style={{ transitionDelay: `${i * 100}ms` }}>
               <div className="timeline-card card">
                 <span className="timeline-chip">
                   {item.date} - {item.time}

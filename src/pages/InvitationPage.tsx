@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Nav from '../components/Nav'
 import Hero from '../sections/Hero'
@@ -6,6 +7,8 @@ import Invitation from '../sections/Invitation'
 import Venue from '../sections/Venue'
 import Album from '../sections/Album'
 import Rsvp from '../sections/Rsvp'
+import HeartRain from '../components/HeartRain'
+import FloatingPetals from '../components/FloatingPetals'
 import { useConfigStore } from '../store'
 import { useReveal } from '../hooks/useReveal'
 import { isGuest } from '../viewMode'
@@ -17,18 +20,54 @@ import '../styles/invitation.css'
 import '../styles/venue.css'
 import '../styles/album.css'
 import '../styles/rsvp.css'
+import '../styles/animations.css'
 
 export default function InvitationPage() {
   const { config } = useConfigStore()
   const [searchParams] = useSearchParams()
   const isPreview = searchParams.has('preview')
   const isShared = isGuest
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   useReveal([config])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollTop
+      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
+      const scroll = `${(totalScroll / windowHeight) * 100}`
+      setScrollProgress(Number(scroll))
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <>
       <style>{`:root{--accent:${config.accentColor};--bg:${config.backgroundColor};}`}</style>
+      
+      <div className="progress-bar" style={{ width: `${scrollProgress}%` }} />
+
+      {config.backgroundImage && (
+        <div className="page-bg-layer" aria-hidden="true">
+          <img
+            className="page-bg-image"
+            src={config.backgroundImage}
+            alt=""
+          />
+          <div className="page-bg-overlay" />
+        </div>
+      )}
+      <div className="page-particles" aria-hidden="true">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div key={i} className={`particle p-${i % 3}`} style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 10}s`
+          }}>✨</div>
+        ))}
+      </div>
+
       <Nav />
       <Hero />
       <Couple />
@@ -37,19 +76,8 @@ export default function InvitationPage() {
       <Album />
       <Rsvp />
 
-      {!isPreview && !isShared && (
-        <div className="fab-stack">
-          <button
-            className="fab"
-            title="Lên đầu trang"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            ⬆️
-          </button>
-        </div>
-      )}
-      {!isPreview && isShared && (
-        <div className="fab-stack">
+      <div className="fab-stack" style={isPreview ? { right: '20px' } : {}}>
+        {!isPreview && isShared && (
           <button
             className="fab"
             title="Chế độ xem"
@@ -58,25 +86,15 @@ export default function InvitationPage() {
           >
             👁️
           </button>
-          <button
-            className="fab"
-            title="Lên đầu trang"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            ⬆️
-          </button>
-        </div>
-      )}
-      {isPreview && (
+        )}
         <button
           className="fab"
           title="Lên đầu trang"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          style={{ right: '20px' }}
         >
           ⬆️
         </button>
-      )}
+      </div>
     </>
   )
 }

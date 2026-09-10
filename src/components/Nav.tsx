@@ -11,6 +11,7 @@ const SECTIONS = [
 
 export default function Nav() {
   const [active, setActive] = useState('home')
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -31,22 +32,35 @@ export default function Nav() {
   }, [])
 
   const go = (id: string) => {
+    setIsOpen(false)
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
-    <nav className="nav">
-      <div className="nav-inner">
-        {SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            className={`nav-link ${active === s.id ? 'active' : ''}`}
-            onClick={() => go(s.id)}
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
-    </nav>
+    <>
+      <button 
+        className={`nav-toggle ${isOpen ? 'open' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Navigation"
+      >
+        <span className="hamburger"></span>
+      </button>
+
+      <nav className={`nav ${isOpen ? 'nav-open' : ''}`}>
+        <div className="nav-inner">
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              className={`nav-link ${active === s.id ? 'active' : ''}`}
+              onClick={() => go(s.id)}
+            >
+              {s.label}
+              {active === s.id && <span className="active-dot" />}
+            </button>
+          ))}
+        </div>
+      </nav>
+      {isOpen && <div className="nav-backdrop" onClick={() => setIsOpen(false)} />}
+    </>
   )
 }

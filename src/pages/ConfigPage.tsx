@@ -154,7 +154,7 @@ export default function ConfigPage() {
 
   const pickImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    key: 'qrCode' | 'groomImage' | 'brideImage'
+    key: 'qrCode' | 'groomImage' | 'brideImage' | 'backgroundImage'
   ) => {
     const file = e.target.files?.[0]
     e.target.value = ''
@@ -729,6 +729,50 @@ export default function ConfigPage() {
                 Mặc định
               </button>
             </div>
+
+            <h2 className="cfg-sub">Hình nền trang thiệp</h2>
+            <p className="cfg-hint">
+              Chọn một hình nền sẽ hiển thị mờ phía sau toàn bộ trang thiệp, tạo cảm giác sang trọng hơn.
+              Nên dùng ảnh có tông màu nhẹ hoặc ảnh phong cảnh. Bỏ trống nếu không muốn dùng hình nền.
+            </p>
+            <ImageField
+              label="Hình nền (khuyến nghị ≥ 1920px chiều rộng)"
+              value={config.backgroundImage}
+              onPick={(e) => pickImage(e, 'backgroundImage')}
+              onClear={() => set('backgroundImage', '')}
+            />
+            {config.backgroundImage && (
+              <div style={{
+                marginTop: 12,
+                borderRadius: 12,
+                overflow: 'hidden',
+                position: 'relative',
+                height: 180,
+              }}>
+                <img
+                  src={config.backgroundImage}
+                  alt="Preview hình nền"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    filter: 'blur(2px) brightness(0.9)',
+                  }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'rgba(255,255,255,0.55)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  color: '#333',
+                  fontSize: 14,
+                  fontWeight: 600,
+                }}>
+                  Preview hiệu ứng mờ — nội dung thiệp sẽ hiển thị phía trên
+                </div>
+              </div>
+            )}
           </section>
         )}
 

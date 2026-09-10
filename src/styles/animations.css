@@ -1,0 +1,713 @@
+/* ═══════════════════════════════════════════════════════════
+   WEDDING INVITATION – ANIMATION SYSTEM
+   Pure CSS animations for maximum performance.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Heart Rain ──────────────────────────────────────────── */
+.heart-rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.rain-heart {
+  position: absolute;
+  top: -5%;
+  animation: heartRainFall var(--fall-duration, 12s) linear var(--fall-delay, 0s) infinite;
+  will-change: transform, opacity;
+  filter: blur(0.2px);
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes heartRainFall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--heart-opacity, 0.5);
+    transform: translateY(8vh) translateX(calc(var(--sway-amount, 20px) * 0.4)) rotate(10deg) scale(1);
+  }
+  22% {
+    transform: translateY(22vh) translateX(calc(var(--sway-amount, 20px) * -0.7)) rotate(-15deg);
+  }
+  38% {
+    transform: translateY(38vh) translateX(calc(var(--sway-amount, 20px) * 0.6)) rotate(18deg) scale(0.95);
+  }
+  52% {
+    transform: translateY(52vh) translateX(calc(var(--sway-amount, 20px) * -0.5)) rotate(-10deg) scale(0.9);
+  }
+  68% {
+    transform: translateY(68vh) translateX(calc(var(--sway-amount, 20px) * 0.8)) rotate(12deg) scale(0.85);
+  }
+  82% {
+    transform: translateY(82vh) translateX(calc(var(--sway-amount, 20px) * -0.3)) rotate(-18deg) scale(0.8);
+    opacity: var(--heart-opacity, 0.5);
+  }
+  100% {
+    transform: translateY(115vh) translateX(calc(var(--sway-amount, 20px) * 0.2)) rotate(25deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* ── Floating Petals ──────────────────────────────────────── */
+.floating-petals {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.float-petal {
+  position: absolute;
+  will-change: transform, opacity;
+  opacity: var(--petal-opacity, 0.2);
+  pointer-events: none;
+  user-select: none;
+}
+
+.fp-0 { animation: petalDrift0 var(--drift-duration, 20s) ease-in-out var(--drift-delay, 0s) infinite; }
+.fp-1 { animation: petalDrift1 var(--drift-duration, 20s) ease-in-out var(--drift-delay, 0s) infinite; }
+.fp-2 { animation: petalDrift2 var(--drift-duration, 20s) ease-in-out var(--drift-delay, 0s) infinite; }
+.fp-3 { animation: petalDrift3 var(--drift-duration, 20s) ease-in-out var(--drift-delay, 0s) infinite; }
+
+@keyframes petalDrift0 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: var(--petal-opacity, 0.2); }
+  25% { transform: translate(30px, -25px) rotate(45deg); opacity: calc(var(--petal-opacity, 0.2) + 0.1); }
+  50% { transform: translate(-20px, -45px) rotate(90deg); }
+  75% { transform: translate(18px, -15px) rotate(135deg); opacity: calc(var(--petal-opacity, 0.2) - 0.05); }
+}
+
+@keyframes petalDrift1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-28px, 18px) rotate(-35deg); }
+  50% { transform: translate(35px, 35px) rotate(-80deg); opacity: calc(var(--petal-opacity, 0.2) + 0.12); }
+  75% { transform: translate(-12px, 10px) rotate(-125deg); }
+}
+
+@keyframes petalDrift2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(22px, -30px) rotate(60deg) scale(1.15); }
+  66% { transform: translate(-28px, 22px) rotate(120deg) scale(0.88); }
+}
+
+@keyframes petalDrift3 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-22px, -28px) rotate(-50deg); }
+  40% { transform: translate(28px, 12px) rotate(-95deg); opacity: calc(var(--petal-opacity, 0.2) + 0.08); }
+  60% { transform: translate(-15px, -22px) rotate(-140deg); }
+  80% { transform: translate(18px, 28px) rotate(-185deg); }
+}
+
+/* ── Hero Petal Fall (existing 🌸 in Hero section) ────────── */
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.petal {
+  position: absolute;
+  top: -10%;
+  animation: petalFall 15s linear infinite;
+  will-change: transform;
+  user-select: none;
+  pointer-events: none;
+  filter: blur(0.3px);
+}
+
+@keyframes petalFall {
+  0% {
+    transform: translateY(0) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(30vh) rotate(120deg) translateX(25px);
+  }
+  50% {
+    transform: translateY(50vh) rotate(180deg) translateX(-15px);
+    opacity: 0.5;
+  }
+  70% {
+    transform: translateY(70vh) rotate(270deg) translateX(20px);
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(115vh) rotate(360deg) translateX(-10px);
+    opacity: 0;
+  }
+}
+
+/* ── Confetti Burst ──────────────────────────────────────── */
+.confetti-burst {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: var(--size, 8px);
+  height: var(--size, 8px);
+  animation: confettiExplode 2.8s cubic-bezier(0.15, 0.6, 0.35, 1) var(--delay, 0s) forwards;
+  will-change: transform, opacity;
+}
+
+.confetti-circle { border-radius: 50%; }
+.confetti-rect { border-radius: 2px; width: calc(var(--size, 8px) * 0.6); }
+.confetti-heart {
+  clip-path: polygon(50% 15%, 65% 0%, 80% 0%, 100% 18%, 100% 45%, 50% 100%, 0% 45%, 0% 18%, 20% 0%, 35% 0%);
+}
+
+@keyframes confettiExplode {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0);
+    opacity: 1;
+  }
+  12% {
+    transform: translate(calc(var(--x-end) * 0.4), calc(var(--y-end) * -0.6)) rotate(calc(var(--rotation) * 0.3)) scale(1.2);
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x-end), var(--y-end)) rotate(var(--rotation)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* ── Progress Bar ────────────────────────────────────────── */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), #ff6b9d, #ffc02e, #ff8a00);
+  z-index: 999;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px rgba(232, 23, 93, 0.4), 0 0 4px rgba(232, 23, 93, 0.2);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Hero Save-the-Date Badge ────────────────────────────── */
+.hero-save-badge {
+  display: inline-block;
+  padding: 10px 30px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(232, 23, 93, 0.06));
+  border: 1.5px solid rgba(255, 215, 0, 0.35);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  position: relative;
+  overflow: hidden;
+  animation: heroIn 0.9s ease both, badgeGlow 3s ease-in-out infinite;
+  margin-bottom: 18px;
+}
+
+.hero-save-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.35), transparent);
+  animation: shimmerSweep 3.5s ease-in-out infinite;
+}
+
+@keyframes shimmerSweep {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.08), 0 0 24px rgba(232, 23, 93, 0.04); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), 0 0 40px rgba(232, 23, 93, 0.08); }
+}
+
+/* ── Hero Ornament ───────────────────────────────────────── */
+.hero-ornament {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  animation: heroIn 0.9s 0.1s ease both;
+}
+
+.ornament-line {
+  width: clamp(40px, 10vw, 80px);
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.ornament-icon {
+  font-size: 18px;
+  color: var(--accent);
+  animation: spinSlow 10s linear infinite;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Hero Date Pill ──────────────────────────────────────── */
+.hero-date {
+  margin-top: 28px;
+  padding: 12px 28px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 999px;
+  border: 1px solid rgba(232, 23, 93, 0.12);
+  box-shadow: 0 4px 20px rgba(232, 23, 93, 0.06);
+  animation: heroIn 0.9s 0.35s ease both;
+}
+
+.hero-date p {
+  font-family: var(--font-heading);
+  font-size: clamp(16px, 3vw, 24px);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 1px;
+}
+
+/* ── Photo Flourish (dashed ring around couple photos) ──── */
+.photo-flourish {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px dashed rgba(232, 23, 93, 0.15);
+  animation: spinSlow 25s linear infinite reverse;
+  pointer-events: none;
+}
+
+/* ── Quote Ornament ──────────────────────────────────────── */
+.quote-ornament {
+  width: 50px;
+  height: 2px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+}
+
+.quote-ornament.top { margin-bottom: 16px; }
+.quote-ornament.bottom { margin-top: 16px; }
+
+/* ── Heart Divider ───────────────────────────────────────── */
+.heart-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 14px 0 20px;
+}
+
+.heart-divider .line {
+  width: clamp(40px, 10vw, 80px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+}
+
+.heart-divider .heart {
+  font-size: 22px;
+  color: var(--accent);
+  animation: floatyPulse 2.4s ease-in-out infinite;
+}
+
+/* ── Enhanced Reveal Variants ────────────────────────────── */
+.reveal.fade-slide-left {
+  opacity: 0;
+  transform: translateX(-60px) scale(0.97);
+  transition: opacity 0.9s cubic-bezier(0.165, 0.84, 0.44, 1),
+              transform 0.9s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.reveal.fade-slide-right {
+  opacity: 0;
+  transform: translateX(60px) scale(0.97);
+  transition: opacity 0.9s cubic-bezier(0.165, 0.84, 0.44, 1),
+              transform 0.9s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.reveal.fade-scale {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.7s cubic-bezier(0.165, 0.84, 0.44, 1),
+              transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reveal.fade-slide-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
+              transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.reveal.fade-slide-left.visible,
+.reveal.fade-slide-right.visible,
+.reveal.fade-scale.visible,
+.reveal.fade-slide-up.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Envelope Open Animation ─────────────────────────────── */
+.animated-envelope {
+  perspective: 800px;
+}
+
+.animated-envelope .envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), #ff6b9d);
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  transform-origin: top center;
+  transition: transform 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.3s,
+              opacity 0.6s ease 0.8s;
+  z-index: 2;
+  opacity: 0.15;
+}
+
+.animated-envelope.visible .envelope-flap {
+  transform: rotateX(180deg);
+  opacity: 0;
+}
+
+.animated-envelope .invite-note-inner {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease 0.8s, transform 0.7s ease 0.8s;
+}
+
+.animated-envelope.visible .invite-note-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Floating Hearts Background (RSVP section) ───────────── */
+.floating-hearts-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-heart {
+  position: absolute;
+  bottom: -10%;
+  animation: bgHeartFloat 18s linear infinite;
+  opacity: 0;
+  font-size: 18px;
+  will-change: transform, opacity;
+}
+
+@keyframes bgHeartFloat {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(0.6);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.15;
+    transform: translateY(-10vh) translateX(10px) rotate(15deg) scale(1);
+  }
+  50% {
+    opacity: 0.2;
+    transform: translateY(-50vh) translateX(-15px) rotate(-10deg);
+  }
+  90% {
+    opacity: 0.08;
+    transform: translateY(-95vh) translateX(8px) rotate(20deg) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-110vh) translateX(0) rotate(25deg) scale(0.7);
+  }
+}
+
+/* ── RSVP Container ──────────────────────────────────────── */
+.rsvp-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.rsvp-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="rgba(232,23,93,0.03)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') repeat;
+  animation: floatBg 30s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
+}
+
+/* ── Success Animation ───────────────────────────────────── */
+.success-animate {
+  animation: successPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes successPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #0a7a56;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+  animation: checkBounce 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes checkBounce {
+  0% { transform: scale(0) rotate(-45deg); }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ── Confetti Overlay Glow ───────────────────────────────── */
+.confetti-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 215, 0, 0.06), transparent 70%);
+  pointer-events: none;
+  animation: confettiGlow 2s ease-out forwards;
+  border-radius: 24px;
+}
+
+@keyframes confettiGlow {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Image Skeleton Loading ──────────────────────────────── */
+.image-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  border-radius: inherit;
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Form Field Validation Shake ─────────────────────────── */
+.field .invalid {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
+  animation: shakeField 0.4s ease;
+}
+
+@keyframes shakeField {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+
+/* ── Guests Wrapper Slide ────────────────────────────────── */
+.guests-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.guests-wrapper.show {
+  max-height: 120px;
+  opacity: 1;
+}
+
+/* ── Pulse Badge ─────────────────────────────────────────── */
+.pulse-badge {
+  animation: pulseBadge 2s ease-in-out infinite;
+}
+
+@keyframes pulseBadge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ── Bounce ──────────────────────────────────────────────── */
+.bounce {
+  animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0) rotate(-10deg); }
+  60% { transform: scale(1.1) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ── Fade Utilities ──────────────────────────────────────── */
+.fade-in {
+  animation: fadeInAnim 0.3s ease-out;
+}
+
+@keyframes fadeInAnim {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-image {
+  animation: fadeImageIn 0.4s ease-out;
+}
+
+@keyframes fadeImageIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESSIBILITY – Respect prefers-reduced-motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .rain-heart,
+  .float-petal,
+  .confetti-piece,
+  .ornament-icon,
+  .hero-save-badge::before,
+  .photo-flourish,
+  .bg-heart,
+  .petal {
+    animation: none !important;
+  }
+
+  .heart-rain,
+  .floating-petals,
+  .confetti-burst {
+    display: none !important;
+  }
+
+  .reveal,
+  .reveal.fade-slide-left,
+  .reveal.fade-slide-right,
+  .reveal.fade-scale,
+  .reveal.fade-slide-up {
+    opacity: 1 !important;
+    transform: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animated-envelope .envelope-flap {
+    transition: none !important;
+  }
+
+  .animated-envelope .invite-note-inner {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE OPTIMIZATIONS – Reduce particle counts, adapt sizes
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Reduce heart count for performance */
+  .heart-rain .rain-heart:nth-child(n+18) {
+    display: none;
+  }
+
+  /* Reduce floating petals */
+  .floating-petals .float-petal:nth-child(n+12) {
+    display: none;
+  }
+
+  /* Reduce confetti */
+  .confetti-piece:nth-child(n+35) {
+    display: none;
+  }
+
+  /* Reduce RSVP floating hearts */
+  .floating-hearts-bg .bg-heart:nth-child(n+6) {
+    display: none;
+  }
+
+  /* Reduce hero petals */
+  .particles .petal:nth-child(n+8) {
+    display: none;
+  }
+
+  /* Smaller save-badge on mobile */
+  .hero-save-badge {
+    padding: 8px 20px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+  }
+
+  /* Smaller ornament */
+  .hero-ornament {
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  /* Smaller date pill */
+  .hero-date {
+    padding: 10px 20px;
+    margin-top: 20px;
+  }
+
+  /* Slide variants → fade up on mobile (no horizontal slide on narrow screens) */
+  .reveal.fade-slide-left,
+  .reveal.fade-slide-right {
+    transform: translateY(30px) scale(0.98);
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-save-badge {
+    padding: 7px 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .hero-date {
+    padding: 8px 16px;
+  }
+
+  .heart-rain .rain-heart:nth-child(n+12) {
+    display: none;
+  }
+}

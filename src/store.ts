@@ -78,6 +78,7 @@ export interface WeddingConfig {
   // Giao diện
   accentColor: string
   backgroundColor: string
+  backgroundImage: string
 }
 
 export const defaultConfig: WeddingConfig = {
@@ -155,6 +156,7 @@ export const defaultConfig: WeddingConfig = {
 
   accentColor: '#E8175D',
   backgroundColor: '#FFF5F7',
+  backgroundImage: '',
 }
 
 /** Slug mặc định cho link chia sẻ, đổi được trong /config → tab Chia sẻ. */

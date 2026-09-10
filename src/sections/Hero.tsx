@@ -8,8 +8,24 @@ export default function Hero() {
 
   return (
     <section id="home" className="section hero">
+      <div className="particles" aria-hidden="true">
+        {Array.from({ length: 15 }).map((_, i) => (
+          <span key={i} className={`petal petal-${i + 1}`} style={{
+            left: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${10 + Math.random() * 10}s`
+          }}>🌸</span>
+        ))}
+      </div>
+
+      <div className="hero-save-badge">Save the Date</div>
       <h1 className="hero-title">{config.heroTitle}</h1>
-      <div className="section-rule" />
+      
+      <div className="hero-ornament">
+        <span className="ornament-line"></span>
+        <span className="ornament-icon">❀</span>
+        <span className="ornament-line"></span>
+      </div>
 
       <div className="hero-couple">
         <figure className="hero-avatar groom">
@@ -22,8 +38,7 @@ export default function Hero() {
         </figure>
 
         <div className="hero-hearts">
-          <span>💗</span>
-          <span>💗</span>
+          <span className="heart-pulse">💗</span>
         </div>
 
         <figure className="hero-avatar bride">
@@ -34,6 +49,10 @@ export default function Hero() {
           )}
           <figcaption>{config.brideName}</figcaption>
         </figure>
+      </div>
+
+      <div className="hero-date">
+        <p>{config.eventDate}</p>
       </div>
 
       <p className="hero-sub">{config.heroSubtitle}</p>

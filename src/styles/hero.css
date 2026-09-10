@@ -6,15 +6,51 @@
   justify-content: center;
   text-align: center;
   padding-top: 32px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, transparent 70%), url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="rgba(232,23,93,0.1)"/></svg>') repeat;
+  background-attachment: fixed;
 }
 
+.hero::before, .hero::after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 2px solid rgba(232, 23, 93, 0.2);
+  border-radius: 20px;
+  z-index: -1;
+  animation: rotateDecorative 20s linear infinite;
+}
+.hero::before {
+  top: -20px;
+  left: -20px;
+  border-right: none;
+  border-bottom: none;
+}
+.hero::after {
+  bottom: -20px;
+  right: -20px;
+  border-left: none;
+  border-top: none;
+}
+
+@keyframes rotateDecorative {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Staggered entrance: each element fades in sequentially ── */
+
 .hero-title {
+  font-family: var(--font-heading);
   font-size: clamp(34px, 7vw, 68px);
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -1px;
   color: var(--accent);
-  animation: heroIn 0.9s ease both;
+  text-shadow: 2px 2px 8px rgba(232, 23, 93, 0.15);
+  animation: heroIn 0.9s 0.15s ease both;
 }
 
 @keyframes heroIn {
@@ -30,13 +66,31 @@
   justify-content: center;
   gap: clamp(18px, 5vw, 56px);
   margin-top: 48px;
+  position: relative;
 }
 
 .hero-avatar {
   display: grid;
   gap: 14px;
   justify-items: center;
-  animation: heroIn 0.9s 0.15s ease both;
+  animation: heroIn 0.9s 0.3s ease both;
+  position: relative;
+}
+
+.hero-avatar::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: -8px; right: -8px; bottom: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  animation: pulseGlow 2s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
 }
 
 .hero-avatar > span,
@@ -49,17 +103,24 @@
   font-size: clamp(48px, 10vw, 64px);
   object-fit: cover;
   box-shadow: 0 10px 30px rgba(43, 45, 66, 0.12);
+  border: 3px solid transparent;
+  background-clip: padding-box;
 }
 
-.hero-avatar.groom > span {
-  background: linear-gradient(150deg, #cfe0ff, #b4c9ff);
+.hero-avatar.groom > span,
+.hero-avatar.groom > img {
+  background-image: linear-gradient(#fff, #fff), linear-gradient(150deg, #cfe0ff, #b4c9ff);
+  background-origin: border-box;
 }
 
-.hero-avatar.bride > span {
-  background: linear-gradient(150deg, #ffd6e5, #ffbcd4);
+.hero-avatar.bride > span,
+.hero-avatar.bride > img {
+  background-image: linear-gradient(#fff, #fff), linear-gradient(150deg, #ffd6e5, #ffbcd4);
+  background-origin: border-box;
 }
 
 .hero-avatar figcaption {
+  font-family: var(--font-heading);
   font-size: clamp(18px, 3vw, 24px);
   font-weight: 500;
 }
@@ -68,24 +129,33 @@
   display: grid;
   gap: 2px;
   font-size: clamp(20px, 4vw, 30px);
+  color: var(--accent);
+  animation: heroIn 0.9s 0.35s ease both;
 }
 
 .hero-hearts span:first-child {
-  animation: floaty 2.4s ease-in-out infinite;
+  animation: floatyPulse 2.4s ease-in-out infinite;
 }
 
 .hero-hearts span:last-child {
-  animation: floaty 2.4s 0.5s ease-in-out infinite;
+  animation: floatyPulse 2.4s 0.5s ease-in-out infinite;
+}
+
+@keyframes floatyPulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.2);
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(232,23,93,0.4);
+  }
 }
 
 @keyframes floaty {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-6px) scale(1.12);
-  }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.12); }
 }
 
 .hero-sub {
@@ -93,6 +163,7 @@
   margin-top: 34px;
   color: var(--ink-soft);
   line-height: 1.7;
+  animation: heroIn 0.9s 0.45s ease both;
 }
 
 .hero-actions {
@@ -101,6 +172,7 @@
   gap: 14px;
   justify-content: center;
   margin-top: 34px;
+  animation: heroIn 0.9s 0.55s ease both;
 }
 
 .btn {
@@ -110,7 +182,7 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, background 0.3s;
 }
 
 .btn-primary {
@@ -120,7 +192,7 @@
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow: 0 14px 32px rgba(232, 23, 93, 0.34);
 }
 
@@ -131,7 +203,8 @@
 }
 
 .btn-ghost:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow);
 }
 
 .hero-scroll {
@@ -144,9 +217,79 @@
   gap: 8px;
   justify-items: center;
   cursor: pointer;
+  transition: color 0.3s;
+  animation: heroIn 0.9s 0.65s ease both;
+}
+
+.hero-scroll:hover {
+  color: var(--accent);
 }
 
 .hero-arrow {
   font-size: 18px;
   animation: floaty 1.8s ease-in-out infinite;
+}
+
+/* ── Mobile adjustments for hero ─────────────────────────── */
+@media (max-width: 640px) {
+  .hero {
+    min-height: calc(100vh - 60px);
+    padding-top: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero::before, .hero::after {
+    width: 80px;
+    height: 80px;
+  }
+
+  .hero-couple {
+    margin-top: 32px;
+    gap: clamp(12px, 4vw, 24px);
+  }
+
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 14px;
+    padding: 0 8px;
+  }
+
+  .hero-actions {
+    margin-top: 24px;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 13px 24px;
+    font-size: 14px;
+  }
+
+  .hero-scroll {
+    margin-top: 36px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-avatar > span,
+  .hero-avatar > img {
+    width: 90px;
+    height: 90px;
+    font-size: 40px;
+  }
+
+  .hero-avatar figcaption {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

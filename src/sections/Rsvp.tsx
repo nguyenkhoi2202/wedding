@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useConfigStore } from '../store'
+import Confetti from '../components/Confetti'
 
 type Status = 'idle' | 'sending' | 'ok' | 'error'
 
@@ -9,6 +10,7 @@ export default function Rsvp() {
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [copied, setCopied] = useState('')
+  const [triedSubmit, setTriedSubmit] = useState(false)
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }))
 
@@ -20,6 +22,7 @@ export default function Rsvp() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setTriedSubmit(true)
     if (!form.name.trim() || !form.attendance) return
 
     const { emailjsServiceId, emailjsTemplateId, emailjsPublicKey } = config
@@ -64,6 +67,7 @@ export default function Rsvp() {
 
       setStatus('ok')
       setForm({ name: '', attendance: '', guests: '1', wish: '' })
+      setTriedSubmit(false)
     } catch (err) {
       setStatus('error')
       setErrorMsg(
@@ -75,7 +79,17 @@ export default function Rsvp() {
   }
 
   return (
-    <section id="rsvp" className="section">
+    <section id="rsvp" className="section rsvp-container">
+      <div className="floating-hearts-bg" aria-hidden="true">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <span key={i} className="bg-heart" style={{
+            left: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${15 + Math.random() * 10}s`
+          }}>🤍</span>
+        ))}
+      </div>
+
       <div className="section-head reveal">
         <h2>Xác Nhận Tham Dự</h2>
         <div className="section-rule" />
@@ -83,12 +97,14 @@ export default function Rsvp() {
       </div>
 
       <div className="rsvp-layout">
-        <form className="card rsvp-card reveal" onSubmit={submit}>
+        <form className="card rsvp-card reveal" onSubmit={submit} noValidate>
+          {status === 'ok' && <div className="confetti-overlay" />}
           <h3>Thông Tin Khách Mời</h3>
 
           <label className="field">
             <span>Họ và tên *</span>
             <input
+              className={triedSubmit && !form.name.trim() ? 'invalid' : ''}
               value={form.name}
               onChange={(e) => set('name', e.target.value)}
               placeholder="Họ và tên"
@@ -99,6 +115,7 @@ export default function Rsvp() {
           <label className="field">
             <span>Quý Khách có tham dự không? *</span>
             <select
+              className={triedSubmit && !form.attendance ? 'invalid' : ''}
               value={form.attendance}
               onChange={(e) => set('attendance', e.target.value)}
               required
@@ -110,18 +127,20 @@ export default function Rsvp() {
             </select>
           </label>
 
-          {form.attendance === 'yes' && (
-            <label className="field">
-              <span>Số người tham dự</span>
-              <select value={form.guests} onChange={(e) => set('guests', e.target.value)}>
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <option key={n} value={String(n)}>
-                    {n} người
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+          <div className={`guests-wrapper ${form.attendance === 'yes' ? 'show' : ''}`}>
+            {form.attendance === 'yes' && (
+              <label className="field">
+                <span>Số người tham dự</span>
+                <select value={form.guests} onChange={(e) => set('guests', e.target.value)}>
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <option key={n} value={String(n)}>
+                      {n} người
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
 
           <label className="field">
             <span>Lời chúc dành cho cô dâu chú rể</span>
@@ -138,8 +157,8 @@ export default function Rsvp() {
           </button>
 
           {status === 'ok' && (
-            <p className="form-msg ok">
-              Cảm ơn Quý Khách! Xác nhận đã được gửi tới gia đình chúng tôi.
+            <p className="form-msg ok success-animate">
+              <span className="check-icon">✓</span> Cảm ơn Quý Khách! Xác nhận đã được gửi tới gia đình chúng tôi.
             </p>
           )}
           {status === 'error' && <p className="form-msg err">{errorMsg}</p>}
@@ -173,10 +192,10 @@ export default function Rsvp() {
                 {config.bankAccount}
                 <button
                   type="button"
-                  className="copy-chip"
+                  className={`copy-chip ${copied === 'stk' ? 'copied' : ''}`}
                   onClick={() => copy('stk', config.bankAccount)}
                 >
-                  {copied === 'stk' ? 'Đã copy' : 'Copy'}
+                  {copied === 'stk' ? '✓ Đã copy' : 'Copy'}
                 </button>
               </dd>
             </div>
