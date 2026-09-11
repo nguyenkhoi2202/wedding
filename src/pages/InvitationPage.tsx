@@ -58,15 +58,8 @@ export default function InvitationPage() {
           <div className="page-bg-overlay" />
         </div>
       )}
-      <div className="page-particles" aria-hidden="true">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div key={i} className={`particle p-${i % 3}`} style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 10}s`
-          }}>✨</div>
-        ))}
-      </div>
+      <FloatingPetals />
+      <HeartRain />
 
       <Nav />
       <Hero />

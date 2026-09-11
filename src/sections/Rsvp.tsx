@@ -99,6 +99,7 @@ export default function Rsvp() {
       <div className="rsvp-layout">
         <form className="card rsvp-card reveal" onSubmit={submit} noValidate>
           {status === 'ok' && <div className="confetti-overlay" />}
+          <Confetti active={status === 'ok'} />
           <h3>Thông Tin Khách Mời</h3>
 
           <label className="field">

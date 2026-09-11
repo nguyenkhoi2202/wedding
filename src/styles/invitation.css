@@ -313,4 +313,84 @@
   .countdown-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .date-card {
+    padding: 28px 18px;
+    border-radius: 20px;
+  }
+
+  .date-card::before {
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border-radius: 14px;
+  }
+
+  .date-badge {
+    padding: 8px 20px;
+    font-size: 11px;
+  }
+
+  .date-tile strong {
+    font-size: clamp(24px, 8vw, 42px);
+  }
+
+  .date-weekday {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .house-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .house-card h4 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .countdown-card {
+    padding: 28px 16px;
+  }
+
+  .countdown-tile {
+    padding: 20px 6px 16px;
+    border-radius: 12px;
+  }
+
+  .countdown-badge {
+    padding: 7px 18px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .date-card {
+    padding: 20px 12px;
+  }
+
+  .date-tile {
+    padding: 18px 8px 14px;
+    border-radius: 14px;
+  }
+
+  .date-tile strong {
+    font-size: 28px;
+  }
+
+  .date-weekday h3 {
+    font-size: 20px;
+  }
+
+  .countdown-grid {
+    gap: 10px;
+  }
+
+  .countdown-tile strong {
+    font-size: 28px;
+  }
+
+  .countdown-note {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
 }

@@ -43,7 +43,7 @@ export default function Couple() {
           <span className="couple-link-badge">🤵</span>
         </div>
 
-        <article className="couple-card reveal">
+        <article className="couple-card reveal fade-slide-right">
           <div className="couple-photo groom">
             {config.groomImage ? (
               <img src={config.groomImage} alt={config.groomFullName} />

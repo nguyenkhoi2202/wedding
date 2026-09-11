@@ -228,10 +228,82 @@
 
 @media (max-width: 640px) {
   .section {
-    padding: 60px 16px;
+    padding: 50px 16px;
+    scroll-margin-top: 70px;
   }
   
   .nav {
     padding: 10px 8px;
+  }
+
+  .nav-inner {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .section-head h2 {
+    font-size: clamp(26px, 6vw, 36px);
+  }
+
+  .section-head p {
+    font-size: 14px;
+    margin-top: 14px;
+  }
+
+  .section-rule {
+    width: 70px;
+    margin-top: 14px;
+  }
+
+  .card {
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+
+  .fab-stack {
+    right: 16px;
+    bottom: 16px;
+    gap: 10px;
+  }
+
+  .fab {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .section {
+    padding: 40px 12px;
+  }
+
+  .section-head h2 {
+    font-size: 24px;
+  }
+
+  .section-head p {
+    font-size: 13px;
+  }
+
+  .card {
+    padding: 20px 14px;
+    border-radius: 16px;
+  }
+
+  .nav-link {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .fab {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
   }
 }

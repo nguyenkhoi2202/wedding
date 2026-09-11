@@ -196,16 +196,61 @@
 @media (max-width: 860px) {
   .album-grid {
     grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: auto;
     gap: 14px;
+  }
+
+  .album-cell,
+  .album-cell:nth-child(2n),
+  .album-cell:nth-child(3n) {
+    grid-row-end: auto;
+    aspect-ratio: 3 / 4;
+    height: auto;
   }
 }
 
 @media (max-width: 480px) {
+  .album-grid {
+    gap: 10px;
+  }
+
+  .album-cell {
+    border-radius: 12px;
+  }
+
   .lb-nav {
     width: 44px;
     height: 44px;
     font-size: 26px;
   }
+
+  .lb-close {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    top: 16px;
+    right: 16px;
+  }
+
+  .lb-nav.prev {
+    left: 12px;
+  }
+
+  .lb-nav.next {
+    right: 12px;
+  }
+
+  .lb-image {
+    border-radius: 10px;
+    max-width: 96vw;
+  }
+
+  .lb-counter {
+    bottom: 20px;
+    font-size: 13px;
+    padding: 5px 14px;
+  }
+
   .swipe-indicator {
     display: block;
     position: absolute;

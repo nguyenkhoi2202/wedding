@@ -197,4 +197,68 @@
   .couple-link::before {
     display: none;
   }
+
+  .couple-card {
+    padding: 12px 14px 20px;
+  }
+
+  .couple-photo {
+    width: clamp(140px, 40vw, 200px);
+    height: clamp(140px, 40vw, 200px);
+    margin-bottom: 20px;
+    border-width: 4px;
+  }
+
+  .couple-card h3 {
+    font-size: clamp(22px, 5vw, 32px);
+  }
+
+  .couple-parents {
+    font-size: 14px;
+    line-height: 1.75;
+    margin-top: 14px;
+  }
+
+  .couple-quote {
+    margin-top: 32px;
+    padding: 32px 20px;
+    font-size: clamp(16px, 3.5vw, 22px);
+  }
+
+  .couple-quote::before {
+    font-size: 48px;
+    top: 4px;
+  }
+
+  .couple-quote::after {
+    font-size: 48px;
+    bottom: -14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .couple-photo {
+    width: 120px;
+    height: 120px;
+    font-size: 54px;
+  }
+
+  .couple-card h3 {
+    font-size: 20px;
+  }
+
+  .couple-role {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .couple-parents {
+    font-size: 13px;
+  }
+
+  .couple-link-badge {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
 }
