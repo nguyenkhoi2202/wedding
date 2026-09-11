@@ -12,18 +12,19 @@ export default function Venue() {
   const guestSalutation = searchParams.get('sal') || searchParams.get('salutation') || 'Trân trọng kính mời'
   const recipientName = guestQueryName?.trim() || config.guestName || 'Quý Khách'
 
-  // Determine initial party side from URL params (?side=bride hoặc ?side=groom)
-  const initialSide = (() => {
-    const s = searchParams.get('side') || searchParams.get('party')
-    if (s) {
-      const lower = s.toLowerCase()
-      if (lower === 'groom' || lower === 'nha-trai' || lower === 'tanhon') return 'groom'
-      if (lower === 'bride' || lower === 'nha-gai' || lower === 'vuquy') return 'bride'
-    }
-    return 'bride'
+  // Determine party side from URL params (?side=bride hoặc ?side=groom hoặc ?side=both)
+  const rawSide = searchParams.get('side') || searchParams.get('party')
+  const specificSide = (() => {
+    if (!rawSide) return null
+    const lower = rawSide.toLowerCase()
+    if (lower === 'groom' || lower === 'nha-trai' || lower === 'tanhon') return 'groom'
+    if (lower === 'bride' || lower === 'nha-gai' || lower === 'vuquy') return 'bride'
+    return null // 'both' or other -> show switcher
   })()
 
-  const [activeSide, setActiveSide] = useState<'bride' | 'groom'>(initialSide)
+  // Chỉ hiện nút gạt khi mời cả 2 bên. Khi mời riêng Nhà Gái hay Nhà Trai thì chỉ hiện duy nhất 1 địa điểm!
+  const showToggle = specificSide === null
+  const [activeSide, setActiveSide] = useState<'bride' | 'groom'>(specificSide || 'bride')
 
   const currentParty =
     activeSide === 'groom'
@@ -84,41 +85,46 @@ export default function Venue() {
         <h2>Địa Điểm Tổ Chức</h2>
         <div className="section-rule" />
         <p className="section-description">
-          Thân mời Quý Khách đến tham dự và nâng ly chúc phúc cùng gia đình chúng tôi tại{' '}
-          {config.groomHometown} và {config.brideHometown}.
+          {specificSide === 'bride'
+            ? `Thân mời Quý Khách đến tham dự và nâng ly chúc phúc cùng gia đình Nhà Gái chúng tôi tại ${config.brideHometown}.`
+            : specificSide === 'groom'
+            ? `Thân mời Quý Khách đến tham dự và nâng ly chúc phúc cùng gia đình Nhà Trai chúng tôi tại ${config.groomHometown}.`
+            : `Thân mời Quý Khách đến tham dự và nâng ly chúc phúc cùng gia đình chúng tôi tại ${config.groomHometown} và ${config.brideHometown}.`}
         </p>
       </div>
 
-      {/* Dual Venue Switcher: Nhà Gái (Lễ Vu Quy) vs Nhà Trai (Lễ Tân Hôn) */}
-      <div className="venue-party-toggle-wrap reveal">
-        <div className="venue-party-pills">
-          <button
-            type="button"
-            className={`venue-party-pill ${activeSide === 'bride' ? 'active' : ''}`}
-            onClick={() => setActiveSide('bride')}
-            aria-label="Xem địa điểm Tiệc Nhà Gái (Lễ Vu Quy)"
-          >
-            <span className="party-pill-icon">🌸</span>
-            <div className="party-pill-text">
-              <span className="party-pill-title">{config.brideParty?.title || 'LỄ VU QUY'}</span>
-              <small className="party-pill-subtitle">{config.brideParty?.badge || 'Tiệc Nhà Gái'}</small>
-            </div>
-          </button>
+      {/* Dual Venue Switcher: CHỈ HIỂN THỊ KHI MỜI CẢ 2 BÊN */}
+      {showToggle && (
+        <div className="venue-party-toggle-wrap reveal">
+          <div className="venue-party-pills">
+            <button
+              type="button"
+              className={`venue-party-pill ${activeSide === 'bride' ? 'active' : ''}`}
+              onClick={() => setActiveSide('bride')}
+              aria-label="Xem địa điểm Tiệc Nhà Gái (Lễ Vu Quy)"
+            >
+              <span className="party-pill-icon">🌸</span>
+              <div className="party-pill-text">
+                <span className="party-pill-title">{config.brideParty?.title || 'LỄ VU QUY'}</span>
+                <small className="party-pill-subtitle">{config.brideParty?.badge || 'Tiệc Nhà Gái'}</small>
+              </div>
+            </button>
 
-          <button
-            type="button"
-            className={`venue-party-pill ${activeSide === 'groom' ? 'active' : ''}`}
-            onClick={() => setActiveSide('groom')}
-            aria-label="Xem địa điểm Tiệc Nhà Trai (Lễ Tân Hôn)"
-          >
-            <span className="party-pill-icon">🤵</span>
-            <div className="party-pill-text">
-              <span className="party-pill-title">{config.groomParty?.title || 'LỄ TÂN HÔN'}</span>
-              <small className="party-pill-subtitle">{config.groomParty?.badge || 'Tiệc Nhà Trai'}</small>
-            </div>
-          </button>
+            <button
+              type="button"
+              className={`venue-party-pill ${activeSide === 'groom' ? 'active' : ''}`}
+              onClick={() => setActiveSide('groom')}
+              aria-label="Xem địa điểm Tiệc Nhà Trai (Lễ Tân Hôn)"
+            >
+              <span className="party-pill-icon">🤵</span>
+              <div className="party-pill-text">
+                <span className="party-pill-title">{config.groomParty?.title || 'LỄ TÂN HÔN'}</span>
+                <small className="party-pill-subtitle">{config.groomParty?.badge || 'Tiệc Nhà Trai'}</small>
+              </div>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Venue Card with 1-Touch Navigation */}
       <article className="venue-card card reveal">

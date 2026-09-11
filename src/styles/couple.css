@@ -209,12 +209,14 @@
 }
 
 .quote-text-line {
-  font-family: var(--font-heading);
-  font-size: clamp(17px, 3.5vw, 24px);
-  font-style: italic;
-  font-weight: 500;
-  color: var(--ink);
-  line-height: 1.7;
+  font-family: 'Charm', 'Dancing Script', var(--font-heading), cursive;
+  font-size: clamp(22px, 5.2vw, 32px);
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: capitalize;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(212, 56, 105, 0.1);
 }
 
 /* ── Mobile Responsiveness ───────────────────────────────── */

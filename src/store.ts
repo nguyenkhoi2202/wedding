@@ -142,7 +142,7 @@ export const defaultConfig: WeddingConfig = {
   brideHometown: 'Đồng Nai',
   groomImage: '',
   brideImage: '',
-  coupleQuote: 'Trăm năm tình viên mãn,\nbạc đầu nghĩa phu thê.',
+  coupleQuote: 'Trăm Năm Tình Viên Mãn,\nBạc Đầu Nghĩa Phu Thê.',
 
   invitationIntro:
     'Trân trọng báo tin lễ cưới của chúng tôi và kính mời Quý Khách đến chung vui.',

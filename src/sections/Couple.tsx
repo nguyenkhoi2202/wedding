@@ -1,5 +1,20 @@
 import { useConfigStore } from '../store'
 
+function capitalizeWords(str: string): string {
+  return str
+    .split('\n')
+    .map((line) =>
+      line
+        .split(' ')
+        .map((word) => {
+          if (!word) return ''
+          return word.charAt(0).toLocaleUpperCase('vi') + word.slice(1)
+        })
+        .join(' ')
+    )
+    .join('\n')
+}
+
 export default function Couple() {
   const { config } = useConfigStore()
 
@@ -103,7 +118,7 @@ export default function Couple() {
 
           <div className="quote-ornament top" />
           <div className="quote-lines">
-            {config.coupleQuote.split('\n').map((line, i) => (
+            {capitalizeWords(config.coupleQuote).split('\n').map((line, i) => (
               <p key={i} className="quote-text-line">
                 {line}
               </p>
