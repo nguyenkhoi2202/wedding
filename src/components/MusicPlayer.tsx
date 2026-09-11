@@ -67,9 +67,16 @@ export default function MusicPlayer({ url }: MusicPlayerProps) {
       })
     }
 
+    // 4. Custom event triggered by WeddingGate opening
+    const onTriggerMusic = () => {
+      tryPlay()
+    }
+    window.addEventListener('wedding:play-music', onTriggerMusic)
+
     return () => {
       removeInteractionListeners()
       audio.removeEventListener('canplay', tryPlay)
+      window.removeEventListener('wedding:play-music', onTriggerMusic)
     }
   }, [musicSource])
 

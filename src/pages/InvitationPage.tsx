@@ -9,6 +9,8 @@ import Rsvp from '../sections/Rsvp'
 import HeartRain from '../components/HeartRain'
 import FloatingPetals from '../components/FloatingPetals'
 import MusicPlayer from '../components/MusicPlayer'
+import WeddingGate from '../components/WeddingGate'
+import SparkleTrail from '../components/SparkleTrail'
 import { useConfigStore } from '../store'
 import { useReveal } from '../hooks/useReveal'
 
@@ -20,6 +22,7 @@ import '../styles/venue.css'
 import '../styles/album.css'
 import '../styles/rsvp.css'
 import '../styles/animations.css'
+import '../styles/gate.css'
 
 export default function InvitationPage() {
   const { config } = useConfigStore()
@@ -49,6 +52,17 @@ export default function InvitationPage() {
   return (
     <div className="wedding-app-wrapper">
       <style>{`:root{--accent:${config.accentColor};--bg:${config.backgroundColor};}`}</style>
+
+      {/* Cổng hoa đón khách & mở thiệp cưới hoàng gia */}
+      <WeddingGate
+        onOpen={() => {
+          // Dispatches custom event to guarantee immediate audio playback on tap
+          window.dispatchEvent(new CustomEvent('wedding:play-music'))
+        }}
+      />
+
+      {/* Hiệu ứng chạm ngón tay / di chuột sao rơi lấp lánh thần tiên */}
+      <SparkleTrail />
 
       {/* Top Reading Progress Bar */}
       <div
