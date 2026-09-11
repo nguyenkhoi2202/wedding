@@ -7,15 +7,58 @@ export default function Venue() {
   const [searchParams] = useSearchParams()
   const [copied, setCopied] = useState(false)
 
-  // Personalized guest name from URL if provided (e.g. ?to=Anh+Tuấn hoặc ?guest=...)
-  const guestQueryName = searchParams.get('to') || searchParams.get('guest')
+  // Personalized guest name & salutation from URL if provided (e.g. ?to=Anh+Tuấn, ?sal=Thân+mời)
+  const guestQueryName = searchParams.get('to') || searchParams.get('guest') || searchParams.get('name')
+  const guestSalutation = searchParams.get('sal') || searchParams.get('salutation') || 'Trân trọng kính mời'
   const recipientName = guestQueryName?.trim() || config.guestName || 'Quý Khách'
 
-  const fullAddress = `${config.venueName} - ${config.venueAddress}`
-  
+  // Determine initial party side from URL params (?side=bride hoặc ?side=groom)
+  const initialSide = (() => {
+    const s = searchParams.get('side') || searchParams.get('party')
+    if (s) {
+      const lower = s.toLowerCase()
+      if (lower === 'groom' || lower === 'nha-trai' || lower === 'tanhon') return 'groom'
+      if (lower === 'bride' || lower === 'nha-gai' || lower === 'vuquy') return 'bride'
+    }
+    return 'bride'
+  })()
+
+  const [activeSide, setActiveSide] = useState<'bride' | 'groom'>(initialSide)
+
+  const currentParty =
+    activeSide === 'groom'
+      ? config.groomParty || {
+          title: 'LỄ TÂN HÔN',
+          badge: 'Tiệc Nhà Trai',
+          date: '03/05/2027',
+          time: '11:30',
+          weekday: 'Thứ Hai',
+          lunarDate: 'Nhằm ngày 28 tháng 03 năm Đinh Mùi',
+          venueName: 'Tư gia Nhà Trai',
+          venueAddress: '844 Ấp Bình Thắng, Xã Phú Giáo, TP. HCM',
+          venueMapUrl: '',
+          venueNotes: 'Gia đình rất hân hạnh được đón tiếp Quý Khách',
+        }
+      : config.brideParty || {
+          title: 'LỄ VU QUY',
+          badge: 'Tiệc Nhà Gái',
+          date: config.eventDate || '02/05/2027',
+          time: config.eventTime || '11:00',
+          weekday: config.eventWeekday || 'Chủ Nhật',
+          lunarDate: config.eventLunarDate || 'Nhằm ngày 27 tháng 03 năm Đinh Mùi',
+          venueName: config.venueName || 'Nhà hàng tiệc cưới Lộc Vừng',
+          venueAddress:
+            config.venueAddress ||
+            'Hẻm 703, K1 - 129 - Đường Bùi Hữu Nghĩa, phường Biên Hòa, tỉnh Đồng Nai',
+          venueMapUrl: config.venueMapUrl || '',
+          venueNotes: config.venueNotes || 'Vui lòng đến trước giờ cử hành 15 phút',
+        }
+
+  const fullAddress = `${currentParty.venueName} - ${currentParty.venueAddress}`
+
   // Google Maps Direct Navigation (opens directions directly)
   const googleDirectionsUrl =
-    config.venueMapUrl ||
+    currentParty.venueMapUrl ||
     `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`
 
   // Apple Maps (iPhone native directions)
@@ -25,7 +68,7 @@ export default function Venue() {
   const grabUrl = `https://grab.onelink.me/2695613898?pid=wedding&af_dp=grab%3A%2F%2Fopen%3FscreenType%3DTRANSPORT`
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(config.venueAddress).then(() => {
+    navigator.clipboard.writeText(currentParty.venueAddress).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2600)
     })
@@ -46,17 +89,52 @@ export default function Venue() {
         </p>
       </div>
 
+      {/* Dual Venue Switcher: Nhà Gái (Lễ Vu Quy) vs Nhà Trai (Lễ Tân Hôn) */}
+      <div className="venue-party-toggle-wrap reveal">
+        <div className="venue-party-pills">
+          <button
+            type="button"
+            className={`venue-party-pill ${activeSide === 'bride' ? 'active' : ''}`}
+            onClick={() => setActiveSide('bride')}
+            aria-label="Xem địa điểm Tiệc Nhà Gái (Lễ Vu Quy)"
+          >
+            <span className="party-pill-icon">🌸</span>
+            <div className="party-pill-text">
+              <span className="party-pill-title">{config.brideParty?.title || 'LỄ VU QUY'}</span>
+              <small className="party-pill-subtitle">{config.brideParty?.badge || 'Tiệc Nhà Gái'}</small>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`venue-party-pill ${activeSide === 'groom' ? 'active' : ''}`}
+            onClick={() => setActiveSide('groom')}
+            aria-label="Xem địa điểm Tiệc Nhà Trai (Lễ Tân Hôn)"
+          >
+            <span className="party-pill-icon">🤵</span>
+            <div className="party-pill-text">
+              <span className="party-pill-title">{config.groomParty?.title || 'LỄ TÂN HÔN'}</span>
+              <small className="party-pill-subtitle">{config.groomParty?.badge || 'Tiệc Nhà Trai'}</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
       {/* Main Venue Card with 1-Touch Navigation */}
       <article className="venue-card card reveal">
         <div className="venue-icon-wrapper">
           <span className="venue-icon bounce">📍</span>
         </div>
 
-        <span className="venue-badge">{config.eventBadge}</span>
-        <h3 className="venue-name">{config.venueName}</h3>
+        <div className="venue-title-header">
+          <span className="venue-badge">{currentParty.badge}</span>
+          <h4 className="venue-ceremony-type">{currentParty.title}</h4>
+        </div>
+
+        <h3 className="venue-name">{currentParty.venueName}</h3>
 
         <p className="venue-address">
-          <span>🏠</span> {config.venueAddress}
+          <span>🏠</span> {currentParty.venueAddress}
         </p>
 
         {/* Copy Address Pill */}
@@ -74,18 +152,18 @@ export default function Venue() {
         <div className="venue-time-pill">
           <span className="time-clock">⏰</span>
           <div className="time-details">
-            <strong>{config.eventTime} • {config.eventWeekday}</strong>
-            <span>Ngày {config.eventDate}</span>
+            <strong>{currentParty.time} • {currentParty.weekday}</strong>
+            <span>Ngày {currentParty.date}</span>
           </div>
-          {config.eventLunarDate && (
-            <small className="venue-lunar">({config.eventLunarDate})</small>
+          {currentParty.lunarDate && (
+            <small className="venue-lunar">({currentParty.lunarDate})</small>
           )}
         </div>
 
         {/* Embedded Interactive Map Preview */}
         <div className="venue-map-embed-wrapper">
           <iframe
-            title="Bản đồ địa điểm tổ chức tiệc cưới"
+            title={`Bản đồ địa điểm ${currentParty.venueName}`}
             src={embedMapUrl}
             className="venue-map-iframe"
             loading="lazy"
@@ -93,7 +171,7 @@ export default function Venue() {
           />
           <div className="venue-map-pin-overlay">
             <span className="pin-pulse">📍</span>
-            <span className="pin-label">{config.venueName}</span>
+            <span className="pin-label">{currentParty.venueName}</span>
           </div>
         </div>
 
@@ -146,13 +224,13 @@ export default function Venue() {
           </div>
         </div>
 
-        {config.venueNotes && (
+        {currentParty.venueNotes && (
           <div className="venue-notes card">
             <div className="venue-notes-title">
               <span>✨</span> Lưu ý khi tham dự
             </div>
             <ul>
-              {config.venueNotes.split('\n').map((line, i) => (
+              {currentParty.venueNotes.split('\n').map((line, i) => (
                 <li key={i}>{line}</li>
               ))}
             </ul>
@@ -169,10 +247,10 @@ export default function Venue() {
           <h4 className="invite-note-title">Thư Mời Chung Vui</h4>
 
           <div className="invite-note-inner">
-            <p className="invite-recipient">
-              Trân trọng kính mời:{' '}
-              <strong className="recipient-highlight">{recipientName}</strong>
-            </p>
+            <div className="invite-recipient-box">
+              <span className="recipient-salutation">{guestSalutation}:</span>
+              <h3 className="recipient-highlight">{recipientName}</h3>
+            </div>
             <div className="invite-divider">❀ ─── ❦ ─── ❀</div>
             <p className="invite-message">{config.invitationMessage}</p>
           </div>

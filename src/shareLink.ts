@@ -15,11 +15,26 @@ function decodeBase64UTF8(str: string): string {
  * Chủ thiệp sửa /config rồi bấm "Lưu & phát hành" là mọi người mở lại link cũ
  * sẽ thấy nội dung mới, không cần gửi lại link.
  */
-export function buildShareUrl(configId: string, guestName?: string): string {
+export function buildShareUrl(
+  configId: string,
+  guestName?: string,
+  side?: 'bride' | 'groom' | 'both',
+  salutation?: string
+): string {
   // Luôn trỏ về gốc site, kể cả khi đang đứng ở /config.
   const base = `${window.location.origin}/?id=${encodeURIComponent(configId)}`
+  const params: string[] = []
   if (guestName && guestName.trim()) {
-    return `${base}&to=${encodeURIComponent(guestName.trim())}`
+    params.push(`to=${encodeURIComponent(guestName.trim())}`)
+  }
+  if (salutation && salutation.trim() && salutation.trim() !== 'Kính gửi') {
+    params.push(`sal=${encodeURIComponent(salutation.trim())}`)
+  }
+  if (side && side !== 'both') {
+    params.push(`side=${side}`)
+  }
+  if (params.length > 0) {
+    return `${base}&${params.join('&')}`
   }
   return base
 }

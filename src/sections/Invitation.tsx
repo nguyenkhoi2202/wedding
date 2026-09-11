@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useConfigStore } from '../store'
 import Countdown from '../components/Countdown'
 import { getGoogleCalendarUrl, downloadIcsFile } from '../utils/calendar'
@@ -10,17 +11,37 @@ const MONTHS = [
 
 export default function Invitation() {
   const { config } = useConfigStore()
-  const [day, month, year] = config.eventDate.split('/')
+  const [searchParams] = useSearchParams()
   const [showCalMenu, setShowCalMenu] = useState(false)
+
+  const sideParam = searchParams.get('side') || searchParams.get('party')
+  const isGroom = sideParam === 'groom' || sideParam === 'nha-trai' || sideParam === 'tanhon'
+  const isBride = sideParam === 'bride' || sideParam === 'nha-gai' || sideParam === 'vuquy'
+  const currentParty = isGroom
+    ? config.groomParty
+    : isBride
+    ? config.brideParty
+    : config.brideParty || config.groomParty
+
+  const activeDate = currentParty?.date || config.eventDate
+  const activeTime = currentParty?.time || config.eventTime
+  const activeWeekday = currentParty?.weekday || config.eventWeekday
+  const activeLunar = currentParty?.lunarDate || config.eventLunarDate
+  const activeBadge = currentParty?.badge || config.eventBadge
+  const activeTitle = currentParty?.title || 'LỄ THÀNH HÔN'
+  const activeVenueName = currentParty?.venueName || config.venueName
+  const activeVenueAddress = currentParty?.venueAddress || config.venueAddress
+
+  const [day, month, year] = activeDate.split('/')
 
   const handleGoogleCal = () => {
     setShowCalMenu(false)
     const url = getGoogleCalendarUrl({
-      title: `Lễ Cưới: ${config.groomName} & ${config.brideName}`,
+      title: `${activeTitle}: ${config.groomName} & ${config.brideName}`,
       details: `${config.invitationIntro}\n${config.invitationMessage}`,
-      location: `${config.venueName}, ${config.venueAddress}`,
-      dateStr: config.eventDate,
-      timeStr: config.eventTime,
+      location: `${activeVenueName}, ${activeVenueAddress}`,
+      dateStr: activeDate,
+      timeStr: activeTime,
     })
     window.open(url, '_blank', 'noopener,noreferrer')
   }
@@ -28,11 +49,11 @@ export default function Invitation() {
   const handleIcsCal = () => {
     setShowCalMenu(false)
     downloadIcsFile({
-      title: `Lễ Cưới: ${config.groomName} & ${config.brideName}`,
+      title: `${activeTitle}: ${config.groomName} & ${config.brideName}`,
       details: `${config.invitationIntro}\n${config.invitationMessage}`,
-      location: `${config.venueName}, ${config.venueAddress}`,
-      dateStr: config.eventDate,
-      timeStr: config.eventTime,
+      location: `${activeVenueName}, ${activeVenueAddress}`,
+      dateStr: activeDate,
+      timeStr: activeTime,
     })
   }
 
@@ -48,7 +69,7 @@ export default function Invitation() {
       {/* Main Date Card */}
       <div className="date-card card reveal">
         <div className="date-card-header">
-          <span className="date-badge">💗 {config.eventBadge.toUpperCase()}</span>
+          <span className="date-badge">💗 {activeBadge.toUpperCase()}</span>
         </div>
 
         {/* 3-column unified calendar bar that stays on 1 row cleanly */}
@@ -65,21 +86,21 @@ export default function Invitation() {
           </div>
 
           <div className="date-tile tile-time">
-            <span className="tile-value">{config.eventTime}</span>
+            <span className="tile-value">{activeTime}</span>
             <span className="tile-label">GIỜ LỄ</span>
           </div>
         </div>
 
         {/* Weekday & Lunar Date Details */}
         <div className="date-weekday">
-          <h3>🗓️ {config.eventWeekday}</h3>
+          <h3>🗓️ {activeWeekday}</h3>
           <div className="weekday-divider" />
           <p className="solar-date">
             Ngày {Number(day)} tháng {Number(month)} năm {year}
           </p>
-          {config.eventLunarDate && (
+          {activeLunar && (
             <p className="lunar-badge">
-              <span className="lunar-icon">🌙</span> {config.eventLunarDate}
+              <span className="lunar-icon">🌙</span> {activeLunar}
             </p>
           )}
 

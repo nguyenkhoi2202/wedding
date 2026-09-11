@@ -28,17 +28,100 @@
   font-size: 34px;
 }
 
+/* ── Party Switcher Toggle (Nhà Gái / Nhà Trai) ──────────── */
+.venue-party-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.venue-party-pills {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(212, 163, 89, 0.4);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(212, 56, 105, 0.08);
+}
+
+.venue-party-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  color: var(--ink-soft);
+  text-align: left;
+}
+
+.venue-party-pill:hover {
+  background: rgba(232, 23, 93, 0.06);
+  color: var(--accent);
+}
+
+.venue-party-pill.active {
+  background: linear-gradient(135deg, #e8175d 0%, #b81549 100%);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(232, 23, 93, 0.35);
+}
+
+.party-pill-icon {
+  font-size: 18px;
+}
+
+.party-pill-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.party-pill-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.party-pill-subtitle {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.venue-title-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.venue-ceremony-type {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin: 0;
+}
+
 .venue-badge {
   display: inline-block;
-  padding: 6px 20px;
+  padding: 5px 16px;
   border-radius: 999px;
   background: linear-gradient(135deg, #fff0db, #ffe0b2);
   color: #b05a00;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 2px;
 }
 
 .venue-name {
@@ -336,22 +419,43 @@
   border: 1px dashed rgba(212, 56, 105, 0.25);
 }
 
-.invite-recipient {
-  font-size: clamp(16px, 3.5vw, 20px);
-  color: var(--ink);
-  line-height: 1.5;
+.invite-recipient-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 240, 245, 0.95), rgba(254, 235, 240, 0.95), rgba(255, 246, 232, 0.95));
+  border: 1.5px solid rgba(212, 163, 89, 0.5);
+  box-shadow: 0 4px 18px rgba(212, 56, 105, 0.12), 0 0 12px rgba(212, 163, 89, 0.15);
+  margin-bottom: 8px;
+  max-width: 95%;
+}
+
+.recipient-salutation {
+  font-size: clamp(14.5px, 3.8vw, 18px);
+  color: #8a1d3f;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .recipient-highlight {
+  font-family: var(--font-heading);
+  font-size: clamp(22px, 5.4vw, 32px);
   color: var(--accent);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-shadow: 0 1px 3px rgba(212, 56, 105, 0.15);
+  margin: 0;
+  line-height: 1.25;
 }
 
 .invite-divider {
-  margin: 12px 0;
-  font-size: 11px;
-  color: var(--accent);
-  opacity: 0.6;
+  margin: 14px 0 10px;
+  font-size: 13px;
+  color: var(--gold);
+  opacity: 0.8;
 }
 
 .invite-message {

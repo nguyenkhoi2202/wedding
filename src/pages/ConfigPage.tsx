@@ -80,42 +80,90 @@ export default function ConfigPage() {
   const [idDraft, setIdDraft] = useState(configId)
   const mountedRef = useRef(false)
 
+  // Cấu hình Nhà Gái / Nhà Trai trong tab Địa Điểm
+  const [venuePartyTab, setVenuePartyTab] = useState<'bride' | 'groom'>('bride')
+
   // Tạo link custom cho từng khách
   const [guestNameInput, setGuestNameInput] = useState('')
   const [salutationInput, setSalutationInput] = useState('Kính gửi')
+  const [guestSideInput, setGuestSideInput] = useState<'bride' | 'groom' | 'both'>('bride')
   const [batchGuestsInput, setBatchGuestsInput] = useState('')
+  const [batchSideInput, setBatchSideInput] = useState<'bride' | 'groom' | 'both'>('bride')
   const [guestSearch, setGuestSearch] = useState('')
   const [showBatchModal, setShowBatchModal] = useState(false)
 
   const set = <K extends keyof WeddingConfig>(key: K, value: WeddingConfig[K]) =>
     updateConfig({ [key]: value } as Partial<WeddingConfig>)
 
+  const updateParty = (sideKey: 'bride' | 'groom', updates: Partial<typeof defaultConfig.brideParty>) => {
+    const key = sideKey === 'bride' ? 'brideParty' : 'groomParty'
+    const cur = config[key] || defaultConfig[key]
+    const updated = { ...cur, ...updates }
+    if (sideKey === 'bride') {
+      updateConfig({
+        brideParty: updated,
+        venueName: updated.venueName,
+        venueAddress: updated.venueAddress,
+        venueMapUrl: updated.venueMapUrl,
+        venueNotes: updated.venueNotes,
+      })
+    } else {
+      updateConfig({
+        groomParty: updated,
+      })
+    }
+  }
+
   const flash = (msg: string) => {
     setToast(msg)
     setTimeout(() => setToast(''), 2200)
   }
 
-  const buildInvitationMessage = (guestName: string, salutation = 'Kính gửi') => {
-    const link = buildShareUrl(configId, guestName)
+  const buildInvitationMessage = (
+    guestName: string,
+    salutation = 'Kính gửi',
+    side: 'bride' | 'groom' | 'both' = 'bride'
+  ) => {
+    const link = buildShareUrl(configId, guestName, side, salutation)
+    const party =
+      side === 'groom'
+        ? config.groomParty || defaultConfig.groomParty
+        : config.brideParty || defaultConfig.brideParty
+
+    const ceremonyTitle = party.title || (side === 'groom' ? 'LỄ TÂN HÔN' : 'LỄ VU QUY')
+    const partyDate = party.date || config.eventDate
+    const partyWeekday = party.weekday || config.eventWeekday
+    const partyTime = party.time || config.eventTime
+    const venueName = party.venueName || config.venueName
+    const venueAddress = party.venueAddress || config.venueAddress
+
     return `${salutation} ${guestName}!
 
-Trân trọng kính mời ${guestName} đến tham dự và nâng ly chúc mừng lễ thành hôn của ${config.groomName} & ${config.brideName} vào ${config.eventWeekday}, ngày ${config.eventDate} tại ${config.venueName}.
+Trân trọng kính mời ${guestName} đến tham dự và nâng ly chúc mừng ${ceremonyTitle} của ${config.groomName} & ${config.brideName} vào ${partyWeekday}, ngày ${partyDate} lúc ${partyTime} tại ${venueName} (${venueAddress}).
 
-Xem thiệp cưới & thông tin chi tiết tại:
+Xem thiệp cưới & chỉ đường 1 chạm tại:
 ${link}
 
 Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chúng mình! 💖`
   }
 
-  const copyInvitationText = (guestName: string, salutation = 'Kính gửi') => {
-    const text = buildInvitationMessage(guestName, salutation)
+  const copyInvitationText = (
+    guestName: string,
+    salutation = 'Kính gửi',
+    side: 'bride' | 'groom' | 'both' = 'bride'
+  ) => {
+    const text = buildInvitationMessage(guestName, salutation, side)
     navigator.clipboard
       .writeText(text)
       .then(() => flash(`✓ Đã copy tin nhắn mời cho "${guestName}"`))
       .catch(() => flash('Không copy được, vui lòng copy thủ công'))
   }
 
-  const addCustomGuest = (nameToAdd: string, salutation = 'Kính gửi') => {
+  const addCustomGuest = (
+    nameToAdd: string,
+    salutation = 'Kính gửi',
+    side: 'bride' | 'groom' | 'both' = 'bride'
+  ) => {
     const trimmed = nameToAdd.trim()
     if (!trimmed) return
     const guests = config.customGuests || []
@@ -127,6 +175,7 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
       id: `g-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       name: trimmed,
       salutation,
+      side,
     }
     set('customGuests', [newGuest, ...guests])
     setGuestNameInput('')
@@ -146,6 +195,7 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
     lines.forEach((line) => {
       let cleanName = line
       let sal = salutationInput
+      let s = batchSideInput
       if (line.includes(':')) {
         const parts = line.split(':')
         sal = parts[0].trim()
@@ -156,6 +206,7 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
           id: `g-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
           name: cleanName,
           salutation: sal,
+          side: s,
         })
         addedCount++
       }
@@ -571,23 +622,138 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
 
         {tab === 'venue' && (
           <section className="cfg-card">
-            <h2>Địa điểm tiệc</h2>
-            <TextField cfg={config} set={set} label="Tên nhà hàng" field="venueName" />
-            <TextField cfg={config} set={set} label="Địa chỉ" field="venueAddress" rows={2} />
-            <TextField
-              cfg={config}
-              set={set}
-              label="Link Google Maps (bỏ trống sẽ tự tìm theo địa chỉ)"
-              field="venueMapUrl"
-              placeholder="https://maps.app.goo.gl/..."
-            />
-            <TextField
-              cfg={config}
-              set={set}
-              label="Ghi chú (mỗi dòng một gạch đầu dòng)"
-              field="venueNotes"
-              rows={4}
-            />
+            <div className="cfg-party-toggle-bar">
+              <button
+                type="button"
+                className={`cfg-party-tab-btn ${venuePartyTab === 'bride' ? 'active' : ''}`}
+                onClick={() => setVenuePartyTab('bride')}
+              >
+                <span>🌸 Cấu hình Nhà Gái (Lễ Vu Quy)</span>
+              </button>
+              <button
+                type="button"
+                className={`cfg-party-tab-btn ${venuePartyTab === 'groom' ? 'active' : ''}`}
+                onClick={() => setVenuePartyTab('groom')}
+              >
+                <span>🤵 Cấu hình Nhà Trai (Lễ Tân Hôn)</span>
+              </button>
+            </div>
+
+            <div className="cfg-party-header-info">
+              <h3>
+                {venuePartyTab === 'bride'
+                  ? '🌸 Địa điểm & Thông tin Tiệc Nhà Gái (Lễ Vu Quy)'
+                  : '🤵 Địa điểm & Thông tin Tiệc Nhà Trai (Lễ Tân Hôn)'}
+              </h3>
+              <p className="cfg-hint">
+                {venuePartyTab === 'bride'
+                  ? 'Cấu hình này dành cho thiệp gửi khách Nhà Gái (Vu Quy) hoặc khi khách chọn tab Nhà Gái.'
+                  : 'Cấu hình này dành cho thiệp gửi khách Nhà Trai (Tân Hôn) hoặc khi khách chọn tab Nhà Trai.'}
+              </p>
+            </div>
+
+            {(() => {
+              const cur =
+                venuePartyTab === 'bride'
+                  ? config.brideParty || defaultConfig.brideParty
+                  : config.groomParty || defaultConfig.groomParty
+              return (
+                <div className="cfg-party-form">
+                  <div className="cfg-grid-2">
+                    <label className="cfg-field">
+                      <span>Tiêu đề buổi lễ</span>
+                      <input
+                        value={cur.title}
+                        onChange={(e) => updateParty(venuePartyTab, { title: e.target.value })}
+                        placeholder={venuePartyTab === 'bride' ? 'LỄ VU QUY' : 'LỄ TÂN HÔN'}
+                      />
+                    </label>
+                    <label className="cfg-field">
+                      <span>Huy hiệu phân loại</span>
+                      <input
+                        value={cur.badge}
+                        onChange={(e) => updateParty(venuePartyTab, { badge: e.target.value })}
+                        placeholder={venuePartyTab === 'bride' ? 'Tiệc Nhà Gái' : 'Tiệc Nhà Trai'}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="cfg-grid-3">
+                    <label className="cfg-field">
+                      <span>Ngày tổ chức (dd/mm/yyyy)</span>
+                      <input
+                        value={cur.date}
+                        onChange={(e) => updateParty(venuePartyTab, { date: e.target.value })}
+                        placeholder="02/05/2027"
+                      />
+                    </label>
+                    <label className="cfg-field">
+                      <span>Thứ trong tuần</span>
+                      <input
+                        value={cur.weekday}
+                        onChange={(e) => updateParty(venuePartyTab, { weekday: e.target.value })}
+                        placeholder="Chủ Nhật"
+                      />
+                    </label>
+                    <label className="cfg-field">
+                      <span>Giờ tổ chức</span>
+                      <input
+                        value={cur.time}
+                        onChange={(e) => updateParty(venuePartyTab, { time: e.target.value })}
+                        placeholder="11:00"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="cfg-field">
+                    <span>Ngày âm lịch</span>
+                    <input
+                      value={cur.lunarDate}
+                      onChange={(e) => updateParty(venuePartyTab, { lunarDate: e.target.value })}
+                      placeholder="Nhằm ngày 27 tháng 03 năm Đinh Mùi"
+                    />
+                  </label>
+
+                  <label className="cfg-field">
+                    <span>Tên nhà hàng / địa điểm</span>
+                    <input
+                      value={cur.venueName}
+                      onChange={(e) => updateParty(venuePartyTab, { venueName: e.target.value })}
+                      placeholder={venuePartyTab === 'bride' ? 'Nhà hàng tiệc cưới Lộc Vừng' : 'Tư gia Nhà Trai'}
+                    />
+                  </label>
+
+                  <label className="cfg-field">
+                    <span>Địa chỉ tổ chức</span>
+                    <textarea
+                      rows={2}
+                      value={cur.venueAddress}
+                      onChange={(e) => updateParty(venuePartyTab, { venueAddress: e.target.value })}
+                      placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố..."
+                    />
+                  </label>
+
+                  <label className="cfg-field">
+                    <span>Link Google Maps (bỏ trống sẽ tự tìm theo địa chỉ)</span>
+                    <input
+                      value={cur.venueMapUrl}
+                      onChange={(e) => updateParty(venuePartyTab, { venueMapUrl: e.target.value })}
+                      placeholder="https://maps.app.goo.gl/..."
+                    />
+                  </label>
+
+                  <label className="cfg-field">
+                    <span>Ghi chú khi tham dự (mỗi dòng một gạch đầu dòng)</span>
+                    <textarea
+                      rows={3}
+                      value={cur.venueNotes}
+                      onChange={(e) => updateParty(venuePartyTab, { venueNotes: e.target.value })}
+                      placeholder="Vui lòng đến trước giờ cử hành 15 phút..."
+                    />
+                  </label>
+                </div>
+              )
+            })()}
           </section>
         )}
 
@@ -1113,7 +1279,7 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
 
               {/* Form tạo nhanh 1 khách */}
               <div className="cfg-guest-creator-box">
-                <div className="cfg-grid-2">
+                <div className="cfg-grid-3">
                   <div className="cfg-field">
                     <span>Xưng hô</span>
                     <select
@@ -1136,10 +1302,22 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault()
-                          addCustomGuest(guestNameInput, salutationInput)
+                          addCustomGuest(guestNameInput, salutationInput, guestSideInput)
                         }
                       }}
                     />
+                  </div>
+
+                  <div className="cfg-field">
+                    <span>Mời tiệc bên nào</span>
+                    <select
+                      value={guestSideInput}
+                      onChange={(e) => setGuestSideInput(e.target.value as 'bride' | 'groom' | 'both')}
+                    >
+                      <option value="bride">🌸 Nhà Gái (Lễ Vu Quy)</option>
+                      <option value="groom">🤵 Nhà Trai (Lễ Tân Hôn)</option>
+                      <option value="both">💖 Cả Hai Bên</option>
+                    </select>
                   </div>
                 </div>
 
@@ -1148,14 +1326,20 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                   <div className="cfg-guest-preview-box">
                     <div className="preview-url-row">
                       <span className="preview-label">Link riêng:</span>
-                      <code className="preview-url">{buildShareUrl(configId, guestNameInput)}</code>
+                      <code className="preview-url">
+                        {buildShareUrl(configId, guestNameInput, guestSideInput, salutationInput)}
+                      </code>
                     </div>
 
                     <div className="cfg-guest-creator-actions">
                       <button
                         type="button"
                         className="cfg-btn primary"
-                        onClick={() => copyToClipboard(buildShareUrl(configId, guestNameInput))}
+                        onClick={() =>
+                          copyToClipboard(
+                            buildShareUrl(configId, guestNameInput, guestSideInput, salutationInput)
+                          )
+                        }
                       >
                         📋 Copy link
                       </button>
@@ -1163,7 +1347,9 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                       <button
                         type="button"
                         className="cfg-btn success-btn"
-                        onClick={() => copyInvitationText(guestNameInput, salutationInput)}
+                        onClick={() =>
+                          copyInvitationText(guestNameInput, salutationInput, guestSideInput)
+                        }
                       >
                         💬 Copy tin nhắn Zalo / SMS
                       </button>
@@ -1171,7 +1357,12 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                       <button
                         type="button"
                         className="cfg-btn ghost"
-                        onClick={() => window.open(buildShareUrl(configId, guestNameInput), '_blank')}
+                        onClick={() =>
+                          window.open(
+                            buildShareUrl(configId, guestNameInput, guestSideInput, salutationInput),
+                            '_blank'
+                          )
+                        }
                       >
                         👁️ Xem thử
                       </button>
@@ -1179,7 +1370,9 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                       <button
                         type="button"
                         className="cfg-btn ghost"
-                        onClick={() => addCustomGuest(guestNameInput, salutationInput)}
+                        onClick={() =>
+                          addCustomGuest(guestNameInput, salutationInput, guestSideInput)
+                        }
                       >
                         ➕ Lưu vào danh sách
                       </button>
@@ -1192,6 +1385,17 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
               {showBatchModal && (
                 <div className="cfg-batch-box">
                   <h4>⚡ Nhập nhanh danh sách nhiều khách (Mỗi khách 1 dòng)</h4>
+                  <div className="cfg-field" style={{ marginBottom: 10 }}>
+                    <span>Chọn tiệc cho danh sách này:</span>
+                    <select
+                      value={batchSideInput}
+                      onChange={(e) => setBatchSideInput(e.target.value as 'bride' | 'groom' | 'both')}
+                    >
+                      <option value="bride">🌸 Khách Nhà Gái (Lễ Vu Quy)</option>
+                      <option value="groom">🤵 Khách Nhà Trai (Lễ Tân Hôn)</option>
+                      <option value="both">💖 Cả Hai Bên</option>
+                    </select>
+                  </div>
                   <p className="cfg-hint">
                     Bạn có thể copy từ file Excel hoặc ghi chú rồi dán vào đây:
                   </p>
@@ -1265,13 +1469,24 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                         g.name.toLowerCase().includes(guestSearch.toLowerCase())
                       )
                       .map((g) => {
-                        const guestUrl = buildShareUrl(configId, g.name)
+                        const guestUrl = buildShareUrl(configId, g.name, g.side, g.salutation)
                         return (
                           <div key={g.id} className="cfg-guest-card-item">
                             <div className="cfg-guest-card-header">
                               <div>
                                 <span className="cfg-guest-salutation">{g.salutation || 'Kính gửi'}</span>
                                 <strong className="cfg-guest-name">{g.name}</strong>
+                                <span
+                                  className={`cfg-guest-side-badge ${
+                                    g.side === 'groom' ? 'side-groom' : g.side === 'both' ? 'side-both' : 'side-bride'
+                                  }`}
+                                >
+                                  {g.side === 'groom'
+                                    ? '🤵 Nhà Trai'
+                                    : g.side === 'both'
+                                    ? '💖 Cả 2 bên'
+                                    : '🌸 Nhà Gái'}
+                                </span>
                               </div>
                               <button
                                 type="button"
@@ -1305,7 +1520,7 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                                 type="button"
                                 className="cfg-btn success-btn"
                                 style={{ padding: '6px 12px', fontSize: 12.5 }}
-                                onClick={() => copyInvitationText(g.name, g.salutation)}
+                                onClick={() => copyInvitationText(g.name, g.salutation, g.side)}
                               >
                                 💬 Copy Lời Mời
                               </button>

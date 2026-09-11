@@ -15,20 +15,52 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
   const brideInitial = config.brideName ? config.brideName.trim().slice(-1).toUpperCase() : 'N'
   const monogram = `${groomInitial} ♡ ${brideInitial}`
 
-  // Personalized guest name from URL params (?to=... or ?guest=...)
+  // Personalized guest name & side from URL params
   const [guestName, setGuestName] = useState<string>('')
+  const [salutation, setSalutation] = useState<string>('Kính gửi')
+  const [side, setSide] = useState<'bride' | 'groom' | null>(null)
 
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search)
       const to = params.get('to') || params.get('guest') || params.get('name')
-      if (to && to.trim()) {
-        setGuestName(to.trim())
+      const sal = params.get('sal') || params.get('salutation')
+      const s = params.get('side') || params.get('party')
+
+      if (to && to.trim()) setGuestName(to.trim())
+      if (sal && sal.trim()) setSalutation(sal.trim())
+      if (s) {
+        const lower = s.toLowerCase()
+        if (lower === 'groom' || lower === 'nha-trai' || lower === 'tanhon') {
+          setSide('groom')
+        } else if (lower === 'bride' || lower === 'nha-gai' || lower === 'vuquy') {
+          setSide('bride')
+        }
       }
     } catch {
       // Ignore URL parsing error
     }
   }, [])
+
+  // Resolve title and date according to side
+  const partyInfo =
+    side === 'groom'
+      ? config.groomParty || {
+          title: 'LỄ TÂN HÔN',
+          weekday: config.eventWeekday,
+          date: config.eventDate,
+        }
+      : side === 'bride'
+      ? config.brideParty || {
+          title: 'LỄ VU QUY',
+          weekday: config.eventWeekday,
+          date: config.eventDate,
+        }
+      : {
+          title: config.heroTitle || 'LỄ THÀNH HÔN',
+          weekday: config.eventWeekday,
+          date: config.eventDate,
+        }
 
   // Lock scroll while gate is visible
   useEffect(() => {
@@ -127,12 +159,16 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
 
             {guestName && (
               <div className="gate-vip-guest-badge">
-                <span className="vip-badge-icon">💌</span>
-                <span>Kính gửi: <strong>{guestName}</strong></span>
+                <span className="vip-badge-sparkle">✦</span>
+                <span className="vip-badge-content">
+                  <span className="vip-badge-salutation">{salutation}:</span>{' '}
+                  <strong className="vip-badge-name">{guestName}</strong>
+                </span>
+                <span className="vip-badge-sparkle">✦</span>
               </div>
             )}
 
-            <h2 className="gate-event-title">LỄ THÀNH HÔN</h2>
+            <h2 className="gate-event-title">{partyInfo.title}</h2>
 
             <div className="gate-divider">
               <span className="divider-line" />
@@ -145,7 +181,7 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
             </h1>
 
             <div className="gate-date-badge">
-              <span>🗓️ {config.eventWeekday} • {config.eventDate}</span>
+              <span>🗓️ {partyInfo.weekday} • {partyInfo.date}</span>
             </div>
 
             <p className="gate-welcome-note">

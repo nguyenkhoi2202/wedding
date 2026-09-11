@@ -20,10 +20,24 @@ export interface GuestWish {
   isLiked?: boolean
 }
 
+export interface PartyInfo {
+  title: string
+  badge: string
+  date: string
+  time: string
+  weekday: string
+  lunarDate: string
+  venueName: string
+  venueAddress: string
+  venueMapUrl: string
+  venueNotes: string
+}
+
 export interface CustomGuest {
   id: string
   name: string
   salutation?: string
+  side?: 'bride' | 'groom' | 'both'
 }
 
 export interface WeddingConfig {
@@ -62,11 +76,15 @@ export interface WeddingConfig {
   groomHouseAddress: string
   brideHouseAddress: string
 
-  // Địa điểm tiệc
+  // Địa điểm tiệc chung (legacy fallback)
   venueName: string
   venueAddress: string
   venueMapUrl: string
   venueNotes: string
+
+  // Cấu hình tiệc cưới riêng: Nhà Gái (Lễ Vu Quy) & Nhà Trai (Lễ Tân Hôn)
+  brideParty: PartyInfo
+  groomParty: PartyInfo
 
   // Lời mời
   guestName: string
@@ -142,6 +160,32 @@ export const defaultConfig: WeddingConfig = {
     'Hẻm 703, K1 - 129 - Đường Bùi Hữu Nghĩa, phường Biên Hòa, tỉnh Đồng Nai',
   venueMapUrl: '',
   venueNotes: 'Vui lòng đến trước giờ cử hành 15 phút',
+
+  // Cấu hình tiệc 2 bên: Nhà Gái (Lễ Vu Quy) & Nhà Trai (Lễ Tân Hôn)
+  brideParty: {
+    title: 'LỄ VU QUY',
+    badge: 'Tiệc Nhà Gái',
+    date: '02/05/2027',
+    time: '11:00',
+    weekday: 'Chủ Nhật',
+    lunarDate: 'Nhằm ngày 27 tháng 03 năm Đinh Mùi',
+    venueName: 'Nhà hàng tiệc cưới Lộc Vừng',
+    venueAddress: 'Hẻm 703, K1 - 129 - Đường Bùi Hữu Nghĩa, phường Biên Hòa, tỉnh Đồng Nai',
+    venueMapUrl: '',
+    venueNotes: 'Vui lòng đến trước giờ cử hành 15 phút',
+  },
+  groomParty: {
+    title: 'LỄ TÂN HÔN',
+    badge: 'Tiệc Nhà Trai',
+    date: '03/05/2027',
+    time: '11:30',
+    weekday: 'Thứ Hai',
+    lunarDate: 'Nhằm ngày 28 tháng 03 năm Đinh Mùi',
+    venueName: 'Tư gia Nhà Trai',
+    venueAddress: '844 Ấp Bình Thắng, Xã Phú Giáo, TP. HCM',
+    venueMapUrl: '',
+    venueNotes: 'Gia đình rất hân hạnh được đón tiếp Quý Khách',
+  },
 
   guestName: 'Quý khách',
   invitationMessage:
@@ -248,14 +292,25 @@ export const useConfigStore = create<ConfigStore>()(
         configId: state.configId,
         updatedAt: state.updatedAt,
       }),
-      merge: (persisted, current) => ({
-        ...current,
-        ...(persisted as object),
-        config: {
-          ...defaultConfig,
-          ...((persisted as { config?: Partial<WeddingConfig> })?.config ?? {}),
-        },
-      }),
+      merge: (persisted, current) => {
+        const pConfig = (persisted as { config?: Partial<WeddingConfig> })?.config ?? {}
+        return {
+          ...current,
+          ...(persisted as object),
+          config: {
+            ...defaultConfig,
+            ...pConfig,
+            brideParty: {
+              ...defaultConfig.brideParty,
+              ...(pConfig.brideParty ?? {}),
+            },
+            groomParty: {
+              ...defaultConfig.groomParty,
+              ...(pConfig.groomParty ?? {}),
+            },
+          },
+        }
+      },
     }
   )
 )
