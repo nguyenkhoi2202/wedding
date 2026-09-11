@@ -8,6 +8,9 @@ import Album from '../sections/Album'
 import Rsvp from '../sections/Rsvp'
 import HeartRain from '../components/HeartRain'
 import FloatingPetals from '../components/FloatingPetals'
+import FairytaleCanvas from '../components/FairytaleCanvas'
+import CelebrationCannon from '../components/CelebrationCannon'
+import LiveLoveReactions from '../components/LiveLoveReactions'
 import MusicPlayer from '../components/MusicPlayer'
 import WeddingGate from '../components/WeddingGate'
 import SparkleTrail from '../components/SparkleTrail'
@@ -94,6 +97,12 @@ export default function InvitationPage() {
         </div>
       )}
 
+      {/* Pháo hoa kim tuyến & cánh hoa ăn mừng hoàng gia khi mở thiệp và RSVP */}
+      <CelebrationCannon />
+
+      {/* Hiệu ứng hạt bụi tiên & cánh hoa hồng 3D rơi chuyển động theo gió mượt mà */}
+      <FairytaleCanvas />
+
       {/* Romantic Ambient Particles */}
       <FloatingPetals />
       <HeartRain />
@@ -113,6 +122,9 @@ export default function InvitationPage() {
 
       {/* Floating Background Music Player */}
       <MusicPlayer url={config.musicUrl} />
+
+      {/* Widget Bắn Tim Chúc Phúc Tương Tác Sống Động (Viral Live Love Reactions) */}
+      <LiveLoveReactions />
 
       {/* Scroll to top button (shows after scrolling down) */}
       <div className={`floating-actions ${showScrollTop ? 'visible' : ''}`}>

@@ -78,6 +78,7 @@ export default function Rsvp() {
       if (!res.ok) throw new Error(await res.text())
 
       setStatus('ok')
+      window.dispatchEvent(new CustomEvent('wedding:celebrate'))
       setForm({ name: '', attendance: '', guests: '1', wish: '' })
       setTriedSubmit(false)
     } catch (err) {
