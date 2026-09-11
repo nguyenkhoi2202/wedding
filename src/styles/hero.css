@@ -119,18 +119,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  max-width: 150px;
+  gap: 12px;
+  max-width: 210px;
 }
 
 .avatar-frame {
-  width: clamp(100px, 22vw, 150px);
-  height: clamp(100px, 22vw, 150px);
+  width: clamp(140px, 24vw, 195px);
+  height: clamp(140px, 24vw, 195px);
   border-radius: 50%;
   position: relative;
-  padding: 4px;
-  background: linear-gradient(145deg, #fff, rgba(255, 255, 255, 0.6));
-  box-shadow: 0 10px 30px rgba(43, 35, 39, 0.12);
+  padding: 5px;
+  background: linear-gradient(145deg, #fff, rgba(255, 255, 255, 0.7));
+  box-shadow: 0 12px 36px rgba(43, 35, 39, 0.16);
 }
 
 .avatar-frame img,
@@ -292,12 +292,12 @@
   }
 
   .avatar-frame {
-    width: clamp(88px, 24vw, 115px);
-    height: clamp(88px, 24vw, 115px);
+    width: clamp(118px, 34vw, 152px);
+    height: clamp(118px, 34vw, 152px);
   }
 
   .hero-avatar figcaption {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .hero-role-pill {
@@ -333,11 +333,11 @@
 
 @media (max-width: 360px) {
   .avatar-frame {
-    width: 84px;
-    height: 84px;
+    width: 105px;
+    height: 105px;
   }
 
   .hero-avatar figcaption {
-    font-size: 14px;
+    font-size: 15px;
   }
 }

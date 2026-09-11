@@ -129,13 +129,167 @@
   line-height: 1.6;
 }
 
-.venue-actions {
-  margin-top: 26px;
+/* Copy Address Button */
+.venue-copy-wrap {
+  margin-top: 10px;
 }
 
-.btn-map {
-  padding: 14px 34px;
-  box-shadow: 0 8px 24px var(--accent-glow);
+.venue-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px dashed rgba(212, 163, 89, 0.5);
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.venue-copy-btn:hover {
+  background: #fff;
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.venue-copy-btn.copied {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+/* Embedded Map Preview */
+.venue-map-embed-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  height: 240px;
+  margin: 26px auto 0;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1.5px solid rgba(212, 163, 89, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.venue-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: contrast(1.02) saturate(1.1);
+}
+
+.venue-map-pin-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 56, 105, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.venue-map-pin-overlay .pin-pulse {
+  animation: floatyPulse 1.8s infinite;
+}
+
+/* ── 1-Touch Direct Navigation Action Buttons ─────────────── */
+.venue-actions-1touch {
+  margin-top: 28px;
+}
+
+.actions-guide-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.nav-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.btn-nav-touch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid rgba(212, 163, 89, 0.28);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
+}
+
+.btn-nav-touch:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.btn-nav-touch:active {
+  transform: scale(0.97);
+}
+
+.btn-nav-touch .nav-btn-icon {
+  font-size: 24px;
+}
+
+.btn-nav-touch .nav-btn-text {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.btn-nav-touch .nav-btn-text strong {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.btn-nav-touch .nav-btn-text small {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.btn-nav-touch.google-nav {
+  border-color: rgba(66, 133, 244, 0.35);
+}
+.btn-nav-touch.google-nav:hover {
+  border-color: #4285f4;
+}
+
+.btn-nav-touch.apple-nav {
+  border-color: rgba(100, 100, 100, 0.25);
+}
+.btn-nav-touch.apple-nav:hover {
+  border-color: #333;
+}
+
+.btn-nav-touch.grab-nav {
+  border-color: rgba(0, 177, 79, 0.35);
+}
+.btn-nav-touch.grab-nav:hover {
+  border-color: #00b14f;
 }
 
 /* ── Invitation Envelope Card ────────────────────────────── */

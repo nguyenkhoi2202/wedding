@@ -7,6 +7,7 @@ const SECTIONS = [
   { id: 'invitation', label: 'Thiệp Mời', icon: '💌' },
   { id: 'venue', label: 'Địa Điểm', icon: '📍' },
   { id: 'album', label: 'Album Ảnh', icon: '📸' },
+  { id: 'guestbook', label: 'Sổ Lưu Bút', icon: '✍️' },
   { id: 'rsvp', label: 'Xác Nhận', icon: '✉️' },
 ]
 

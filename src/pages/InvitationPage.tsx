@@ -5,6 +5,7 @@ import Couple from '../sections/Couple'
 import Invitation from '../sections/Invitation'
 import Venue from '../sections/Venue'
 import Album from '../sections/Album'
+import Guestbook from '../sections/Guestbook'
 import Rsvp from '../sections/Rsvp'
 import HeartRain from '../components/HeartRain'
 import FloatingPetals from '../components/FloatingPetals'
@@ -24,6 +25,7 @@ import '../styles/couple.css'
 import '../styles/invitation.css'
 import '../styles/venue.css'
 import '../styles/album.css'
+import '../styles/guestbook.css'
 import '../styles/rsvp.css'
 import '../styles/animations.css'
 import '../styles/gate.css'
@@ -118,6 +120,7 @@ export default function InvitationPage() {
         <Invitation />
         <Venue />
         <Album />
+        <Guestbook />
         <Rsvp />
       </main>
 
