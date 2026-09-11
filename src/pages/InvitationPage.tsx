@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import Nav from '../components/Nav'
 import Hero from '../sections/Hero'
 import Couple from '../sections/Couple'
@@ -9,9 +8,9 @@ import Album from '../sections/Album'
 import Rsvp from '../sections/Rsvp'
 import HeartRain from '../components/HeartRain'
 import FloatingPetals from '../components/FloatingPetals'
+import MusicPlayer from '../components/MusicPlayer'
 import { useConfigStore } from '../store'
 import { useReveal } from '../hooks/useReveal'
-import { isGuest } from '../viewMode'
 
 import '../styles/layout.css'
 import '../styles/hero.css'
@@ -24,70 +23,85 @@ import '../styles/animations.css'
 
 export default function InvitationPage() {
   const { config } = useConfigStore()
-  const [searchParams] = useSearchParams()
-  const isPreview = searchParams.has('preview')
-  const isShared = isGuest
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   useReveal([config])
 
   useEffect(() => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollTop
-      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
-      const scroll = `${(totalScroll / windowHeight) * 100}`
-      setScrollProgress(Number(scroll))
+      const windowHeight =
+        document.documentElement.scrollHeight - document.documentElement.clientHeight
+      const scroll = windowHeight > 0 ? (totalScroll / windowHeight) * 100 : 0
+      setScrollProgress(scroll)
+      setShowScrollTop(totalScroll > 350)
     }
-    window.addEventListener('scroll', handleScroll)
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  return (
-    <>
-      <style>{`:root{--accent:${config.accentColor};--bg:${config.backgroundColor};}`}</style>
-      
-      <div className="progress-bar" style={{ width: `${scrollProgress}%` }} />
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
+  return (
+    <div className="wedding-app-wrapper">
+      <style>{`:root{--accent:${config.accentColor};--bg:${config.backgroundColor};}`}</style>
+
+      {/* Top Reading Progress Bar */}
+      <div
+        className="progress-bar"
+        style={{ width: `${scrollProgress}%` }}
+        aria-hidden="true"
+      />
+
+      {/* Background Image Layer if configured */}
       {config.backgroundImage && (
         <div className="page-bg-layer" aria-hidden="true">
           <img
             className="page-bg-image"
             src={config.backgroundImage}
             alt=""
+            loading="lazy"
           />
           <div className="page-bg-overlay" />
         </div>
       )}
+
+      {/* Romantic Ambient Particles */}
       <FloatingPetals />
       <HeartRain />
 
+      {/* Navigation */}
       <Nav />
-      <Hero />
-      <Couple />
-      <Invitation />
-      <Venue />
-      <Album />
-      <Rsvp />
 
-      <div className="fab-stack" style={isPreview ? { right: '20px' } : {}}>
-        {!isPreview && isShared && (
-          <button
-            className="fab"
-            title="Chế độ xem"
-            disabled
-            style={{ opacity: 0.6, cursor: 'not-allowed' }}
-          >
-            👁️
-          </button>
-        )}
+      {/* Main Wedding Sections */}
+      <main id="main-content">
+        <Hero />
+        <Couple />
+        <Invitation />
+        <Venue />
+        <Album />
+        <Rsvp />
+      </main>
+
+      {/* Floating Background Music Player */}
+      <MusicPlayer url={config.musicUrl} />
+
+      {/* Scroll to top button (shows after scrolling down) */}
+      <div className={`floating-actions ${showScrollTop ? 'visible' : ''}`}>
         <button
-          className="fab"
+          type="button"
+          className="scroll-top-btn"
+          onClick={scrollToTop}
           title="Lên đầu trang"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Cuộn lên đầu trang"
         >
-          ⬆️
+          <span className="scroll-arrow">↑</span>
         </button>
       </div>
-    </>
+    </div>
   )
 }

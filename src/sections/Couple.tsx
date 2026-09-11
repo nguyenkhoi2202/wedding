@@ -4,74 +4,112 @@ export default function Couple() {
   const { config } = useConfigStore()
 
   return (
-    <section id="couple" className="section">
+    <section id="couple" className="section couple-section">
       <div className="section-head reveal">
+        <p className="section-script-subtitle">The Happy Couple</p>
         <h2>Cô Dâu &amp; Chú Rể</h2>
         <div className="heart-divider">
-          <span className="line"></span>
+          <span className="line" />
           <span className="heart">❦</span>
-          <span className="line"></span>
+          <span className="line" />
         </div>
-        <p>Hân hoan giới thiệu hai nhân vật chính trong ngày vui trọng đại của gia đình chúng tôi.</p>
+        <p className="section-description">
+          Hân hoan giới thiệu hai nhân vật chính trong ngày vui trọng đại của gia đình chúng tôi.
+        </p>
       </div>
 
-      <div className="couple-grid reveal">
-        <article className="couple-card reveal fade-slide-left">
-          <div className="couple-photo bride">
-            {config.brideImage ? (
-              <img src={config.brideImage} alt={config.brideFullName} />
-            ) : (
-              <span>👰</span>
-            )}
-            <div className="photo-flourish"></div>
+      <div className="couple-grid">
+        {/* Groom Card */}
+        <article className="couple-card groom-card reveal fade-slide-left">
+          <div className="couple-photo-wrapper">
+            <div className="couple-photo groom">
+              {config.groomImage ? (
+                <img src={config.groomImage} alt={config.groomFullName} loading="lazy" />
+              ) : (
+                <span className="photo-placeholder">🤵</span>
+              )}
+            </div>
+            <div className="photo-flourish" />
           </div>
-          <h3>{config.brideFullName}</h3>
-          <p className="couple-role bride-role">{config.brideRole}</p>
-          <p className="couple-parents">
-            {config.brideOrder}
-            <br />
-            ông <strong>{config.brideFather}</strong> và bà{' '}
-            <strong>{config.brideMother}</strong>,
-            <br />
-            hiện đang sinh sống tại {config.brideHometown}.
-          </p>
+
+          <div className="couple-role groom-role">
+            <span>CHÚ RỂ</span>
+          </div>
+
+          <h3 className="couple-name">{config.groomFullName}</h3>
+
+          <div className="couple-parents">
+            <p className="order-text">{config.groomOrder}</p>
+            <p className="parent-names">
+              Ông <strong>{config.groomFather}</strong>
+              <br />
+              Bà <strong>{config.groomMother}</strong>
+            </p>
+            <p className="hometown-badge">
+              <span>📍 {config.groomHometown}</span>
+            </p>
+          </div>
         </article>
 
-        <div className="couple-link reveal">
-          <span className="couple-link-badge">👰</span>
-          <span className="couple-link-badge heart pulse">💗</span>
-          <span className="couple-link-badge">🤵</span>
+        {/* Center Connection Ornament */}
+        <div className="couple-link reveal fade-scale" aria-hidden="true">
+          <div className="couple-link-line" />
+          <div className="couple-link-badge heart pulse">
+            <span>💗</span>
+          </div>
+          <div className="couple-link-line" />
         </div>
 
-        <article className="couple-card reveal fade-slide-right">
-          <div className="couple-photo groom">
-            {config.groomImage ? (
-              <img src={config.groomImage} alt={config.groomFullName} />
-            ) : (
-              <span>🤵</span>
-            )}
-            <div className="photo-flourish"></div>
+        {/* Bride Card */}
+        <article className="couple-card bride-card reveal fade-slide-right">
+          <div className="couple-photo-wrapper">
+            <div className="couple-photo bride">
+              {config.brideImage ? (
+                <img src={config.brideImage} alt={config.brideFullName} loading="lazy" />
+              ) : (
+                <span className="photo-placeholder">👰</span>
+              )}
+            </div>
+            <div className="photo-flourish" />
           </div>
-          <h3>{config.groomFullName}</h3>
-          <p className="couple-role groom-role">{config.groomRole}</p>
-          <p className="couple-parents">
-            {config.groomOrder}
-            <br />
-            ông <strong>{config.groomFather}</strong> và bà{' '}
-            <strong>{config.groomMother}</strong>,
-            <br />
-            hiện đang sinh sống tại {config.groomHometown}.
-          </p>
+
+          <div className="couple-role bride-role">
+            <span>CÔ DÂU</span>
+          </div>
+
+          <h3 className="couple-name">{config.brideFullName}</h3>
+
+          <div className="couple-parents">
+            <p className="order-text">{config.brideOrder}</p>
+            <p className="parent-names">
+              Ông <strong>{config.brideFather}</strong>
+              <br />
+              Bà <strong>{config.brideMother}</strong>
+            </p>
+            <p className="hometown-badge">
+              <span>📍 {config.brideHometown}</span>
+            </p>
+          </div>
         </article>
       </div>
 
+      {/* Love Quote Card */}
       {config.coupleQuote && (
-        <blockquote className="couple-quote card reveal quote-frame">
-          <div className="quote-ornament top"></div>
-          {config.coupleQuote.split('\n').map((line, i) => (
-            <span key={i}>{line}</span>
-          ))}
-          <div className="quote-ornament bottom"></div>
+        <blockquote className="couple-quote card reveal">
+          <div className="quote-flourish-corner tl">❀</div>
+          <div className="quote-flourish-corner tr">❀</div>
+          <div className="quote-flourish-corner bl">❀</div>
+          <div className="quote-flourish-corner br">❀</div>
+
+          <div className="quote-ornament top" />
+          <div className="quote-lines">
+            {config.coupleQuote.split('\n').map((line, i) => (
+              <p key={i} className="quote-text-line">
+                {line}
+              </p>
+            ))}
+          </div>
+          <div className="quote-ornament bottom" />
         </blockquote>
       )}
     </section>

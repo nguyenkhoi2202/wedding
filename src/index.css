@@ -1,156 +1,218 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+/* ═══════════════════════════════════════════════════════════
+   WEDDING INVITATION DESIGN SYSTEM
+   Editorial, Luxury, Romantic Typography & Glassmorphism
+   ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --accent: #e8175d;
-  --accent-soft: rgba(232, 23, 93, 0.1);
-  --bg: #fff5f7;
-  --ink: #2b2d42;
-  --ink-soft: #6b7280;
-  --ink-faint: #9ca3af;
-  --card: #ffffff;
-  --radius: 20px;
-  --shadow-sm: 0 2px 10px rgba(43, 45, 66, 0.06);
-  --shadow: 0 12px 40px rgba(43, 45, 66, 0.08);
-  --font-heading: 'Playfair Display', serif;
+  --accent: #d43869;
+  --accent-soft: rgba(212, 56, 105, 0.08);
+  --accent-glow: rgba(212, 56, 105, 0.28);
+  --gold: #d4a359;
+  --gold-soft: rgba(212, 163, 89, 0.14);
+  --gold-glow: rgba(212, 163, 89, 0.35);
+  --bg: #fffafb;
+  --ink: #2b2327;
+  --ink-soft: #63575c;
+  --ink-faint: #9c8e94;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(255, 255, 255, 0.95);
+  --radius: 24px;
+  --radius-sm: 14px;
+  --shadow-sm: 0 4px 16px rgba(100, 30, 50, 0.05);
+  --shadow: 0 16px 40px rgba(100, 30, 50, 0.07);
+  --shadow-lg: 0 24px 60px rgba(100, 30, 50, 0.12);
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-script: 'Alex Brush', cursive;
+  --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
   color: var(--ink);
   background:
-    radial-gradient(900px 500px at 15% 0%, #fdeef4 0%, transparent 60%),
-    radial-gradient(900px 600px at 85% 20%, #f2ecff 0%, transparent 55%),
+    radial-gradient(1000px 600px at 10% 0%, #fdeff4 0%, transparent 60%),
+    radial-gradient(900px 700px at 90% 15%, #f6f0ff 0%, transparent 55%),
+    radial-gradient(800px 500px at 50% 60%, #fff7ea 0%, transparent 50%),
     var(--bg);
   background-attachment: fixed;
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 img {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
-button,
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  touch-action: manipulation;
+}
+
 input,
 select,
 textarea {
   font: inherit;
 }
 
-.floral-divider {
+/* ── Typography Accents ──────────────────────────────────── */
+.section-script-subtitle {
+  font-family: var(--font-script);
+  font-size: clamp(28px, 6vw, 42px);
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.section-head {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-head h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.section-description {
+  max-width: 580px;
+  margin: 16px auto 0;
+  color: var(--ink-soft);
+  font-size: clamp(14px, 3.5vw, 16px);
+  line-height: 1.7;
+}
+
+.section-rule {
+  width: 90px;
+  height: 2px;
+  margin: 16px auto 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  border-radius: 2px;
+}
+
+.heart-divider {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin: 32px 0;
+  gap: 14px;
+  margin: 14px 0 16px;
   color: var(--accent);
-  font-size: 24px;
 }
 
-.floral-divider::before,
-.floral-divider::after {
-  content: '❀';
-  opacity: 0.6;
-  font-size: 18px;
+.heart-divider .line {
+  width: clamp(40px, 12vw, 80px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
 }
 
-.glass {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: var(--shadow-sm);
+.heart-divider .heart {
+  font-size: 20px;
+  animation: floatyPulse 2.4s ease-in-out infinite;
 }
 
-@keyframes sparkle {
-  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
-  50% { opacity: 1; transform: scale(1) rotate(180deg); }
-}
-
-.sparkle-effect {
+/* ── Glassmorphic Cards ──────────────────────────────────── */
+.card {
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
   position: relative;
 }
 
-.sparkle-effect::after {
-  content: '✨';
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  font-size: 16px;
-  animation: sparkle 2s ease-in-out infinite;
-}
-
-/* Màn hình chờ / báo lỗi khi tải thiệp từ server */
+/* ── Loading Screen ──────────────────────────────────────── */
 .boot-screen {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 18px;
   padding: 24px;
   text-align: center;
-  background: #fff5f7;
+  background: #fffafb;
   color: #4a2c36;
-  font-family: inherit;
 }
 
 .boot-screen h1 {
-  font-family: var(--font-heading);
   font-size: 56px;
   margin: 0;
+  animation: heartPulse 1.8s infinite;
 }
 
 .boot-screen p {
   margin: 0;
-  max-width: 420px;
-  line-height: 1.6;
+  max-width: 400px;
+  line-height: 1.7;
+  font-size: 16px;
+  color: var(--ink-soft);
 }
 
 .boot-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(232, 23, 93, 0.2);
-  border-top-color: #e8175d;
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(212, 56, 105, 0.18);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: boot-spin 0.9s linear infinite;
 }
 
 @keyframes boot-spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 .boot-btn {
-  padding: 10px 22px;
-  border: none;
+  padding: 12px 28px;
   border-radius: 999px;
-  background: #e8175d;
+  background: var(--accent);
   color: #fff;
+  font-weight: 600;
   font-size: 15px;
-  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(212, 56, 105, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .boot-btn:hover {
-  background: #c01745;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 56, 105, 0.4);
 }

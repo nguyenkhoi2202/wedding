@@ -1,224 +1,268 @@
+/* ═══════════════════════════════════════════════════════════
+   HERO SECTION STYLES
+   ═══════════════════════════════════════════════════════════ */
+
 .hero {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding-top: 32px;
+  padding: 30px 20px 48px;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, transparent 70%), url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="rgba(232,23,93,0.1)"/></svg>') repeat;
-  background-attachment: fixed;
 }
 
-.hero::before, .hero::after {
-  content: '';
+/* ── Floating Background Petals in Hero ─────────────────── */
+.particles {
   position: absolute;
-  width: 120px;
-  height: 120px;
-  border: 2px solid rgba(232, 23, 93, 0.2);
-  border-radius: 20px;
-  z-index: -1;
-  animation: rotateDecorative 20s linear infinite;
-}
-.hero::before {
-  top: -20px;
-  left: -20px;
-  border-right: none;
-  border-bottom: none;
-}
-.hero::after {
-  bottom: -20px;
-  right: -20px;
-  border-left: none;
-  border-top: none;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
 }
 
-@keyframes rotateDecorative {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.petal {
+  position: absolute;
+  top: -10%;
+  animation: petalFall 14s linear infinite;
+  will-change: transform;
+  user-select: none;
+  filter: blur(0.2px);
 }
 
-/* ── Staggered entrance: each element fades in sequentially ── */
+/* ── Save the date badge ─────────────────────────────────── */
+.hero-save-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px;
+  background: linear-gradient(135deg, rgba(255, 245, 230, 0.9), rgba(255, 235, 242, 0.9));
+  border: 1px solid rgba(212, 163, 89, 0.45);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--accent);
+  box-shadow: 0 4px 16px rgba(212, 163, 89, 0.18);
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
 
+.badge-sparkle {
+  color: var(--gold);
+  font-size: 13px;
+  animation: sparkleGlow 2.5s infinite;
+}
+
+@keyframes sparkleGlow {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* ── Script Kicker ───────────────────────────────────────── */
+.hero-script-kicker {
+  font-family: var(--font-script);
+  font-size: clamp(30px, 6vw, 44px);
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 2px;
+  letter-spacing: 1px;
+}
+
+/* ── Main Hero Title ─────────────────────────────────────── */
 .hero-title {
   font-family: var(--font-heading);
-  font-size: clamp(34px, 7vw, 68px);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -1px;
+  font-size: clamp(32px, 6.5vw, 62px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
   color: var(--accent);
-  text-shadow: 2px 2px 8px rgba(232, 23, 93, 0.15);
-  animation: heroIn 0.9s 0.15s ease both;
+  text-shadow: 0 2px 14px rgba(212, 56, 105, 0.15);
+  max-width: 800px;
 }
 
-@keyframes heroIn {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
+/* ── Delicate Ornament ───────────────────────────────────── */
+.hero-ornament {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0 24px;
 }
 
+.ornament-line {
+  width: clamp(40px, 12vw, 90px);
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.ornament-icon {
+  font-size: 18px;
+  color: var(--accent);
+  animation: floatyPulse 2.5s ease-in-out infinite;
+}
+
+/* ── Couple Presentation ─────────────────────────────────── */
 .hero-couple {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(18px, 5vw, 56px);
-  margin-top: 48px;
+  gap: clamp(14px, 4.5vw, 44px);
+  margin: 10px 0 24px;
   position: relative;
+  max-width: 100%;
 }
 
 .hero-avatar {
-  display: grid;
-  gap: 14px;
-  justify-items: center;
-  animation: heroIn 0.9s 0.3s ease both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 150px;
+}
+
+.avatar-frame {
+  width: clamp(100px, 22vw, 150px);
+  height: clamp(100px, 22vw, 150px);
+  border-radius: 50%;
   position: relative;
+  padding: 4px;
+  background: linear-gradient(145deg, #fff, rgba(255, 255, 255, 0.6));
+  box-shadow: 0 10px 30px rgba(43, 35, 39, 0.12);
 }
 
-.hero-avatar::before {
-  content: '';
-  position: absolute;
-  top: -8px; left: -8px; right: -8px; bottom: -8px;
+.avatar-frame img,
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  border: 2px solid var(--accent-soft);
-  animation: pulseGlow 2s ease-in-out infinite;
-  z-index: -1;
-}
-
-@keyframes pulseGlow {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.5; }
-}
-
-.hero-avatar > span,
-.hero-avatar > img {
-  width: clamp(110px, 22vw, 150px);
-  height: clamp(110px, 22vw, 150px);
-  border-radius: 50%;
+  object-fit: cover;
   display: grid;
   place-items: center;
-  font-size: clamp(48px, 10vw, 64px);
-  object-fit: cover;
-  box-shadow: 0 10px 30px rgba(43, 45, 66, 0.12);
-  border: 3px solid transparent;
-  background-clip: padding-box;
+  font-size: clamp(42px, 9vw, 62px);
 }
 
-.hero-avatar.groom > span,
-.hero-avatar.groom > img {
-  background-image: linear-gradient(#fff, #fff), linear-gradient(150deg, #cfe0ff, #b4c9ff);
-  background-origin: border-box;
+.groom .avatar-frame {
+  border: 2px solid rgba(100, 149, 237, 0.4);
 }
 
-.hero-avatar.bride > span,
-.hero-avatar.bride > img {
-  background-image: linear-gradient(#fff, #fff), linear-gradient(150deg, #ffd6e5, #ffbcd4);
-  background-origin: border-box;
+.bride .avatar-frame {
+  border: 2px solid rgba(212, 56, 105, 0.4);
+}
+
+.photo-flourish {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(212, 163, 89, 0.35);
+  animation: spinSlow 30s linear infinite;
+  pointer-events: none;
 }
 
 .hero-avatar figcaption {
   font-family: var(--font-heading);
-  font-size: clamp(18px, 3vw, 24px);
-  font-weight: 500;
+  font-size: clamp(17px, 3.5vw, 24px);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.25;
+  word-break: break-word;
 }
 
-.hero-hearts {
-  display: grid;
-  gap: 2px;
-  font-size: clamp(20px, 4vw, 30px);
+.hero-role-pill {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.groom-pill {
+  background: rgba(100, 149, 237, 0.12);
+  color: #3b6cd4;
+}
+
+.bride-pill {
+  background: rgba(212, 56, 105, 0.1);
   color: var(--accent);
-  animation: heroIn 0.9s 0.35s ease both;
 }
 
-.hero-hearts span:first-child {
-  animation: floatyPulse 2.4s ease-in-out infinite;
+/* Center connector */
+.hero-hearts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(20px, 4vw, 28px);
 }
 
-.hero-hearts span:last-child {
-  animation: floatyPulse 2.4s 0.5s ease-in-out infinite;
+.heart-pulse {
+  animation: floatyPulse 2s ease-in-out infinite;
 }
 
-@keyframes floatyPulse {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    transform: translateY(-8px) scale(1.2);
-    opacity: 1;
-    text-shadow: 0 0 10px rgba(232,23,93,0.4);
-  }
+.rings-icon {
+  font-size: 18px;
+  animation: floaty 2.2s ease-in-out infinite 0.5s;
 }
 
-@keyframes floaty {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-6px) scale(1.12); }
+/* ── Date Pill ───────────────────────────────────────────── */
+.hero-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 56, 105, 0.14);
+  box-shadow: var(--shadow-sm);
+  margin-top: 10px;
+}
+
+.hero-date p {
+  font-family: var(--font-heading);
+  font-size: clamp(15px, 3vw, 18px);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.5px;
 }
 
 .hero-sub {
-  max-width: 520px;
-  margin-top: 34px;
+  max-width: 540px;
+  margin: 18px auto 0;
   color: var(--ink-soft);
+  font-size: clamp(14px, 3.2vw, 16px);
   line-height: 1.7;
-  animation: heroIn 0.9s 0.45s ease both;
 }
 
+/* ── Hero Actions ────────────────────────────────────────── */
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 12px;
   justify-content: center;
-  margin-top: 34px;
-  animation: heroIn 0.9s 0.55s ease both;
+  align-items: center;
+  margin-top: 28px;
+  width: 100%;
 }
 
-.btn {
-  padding: 15px 32px;
-  border-radius: 999px;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, background 0.3s;
+.hero-btn-rsvp {
+  box-shadow: 0 8px 24px var(--accent-glow);
 }
 
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: 0 10px 26px rgba(232, 23, 93, 0.28);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 14px 32px rgba(232, 23, 93, 0.34);
-}
-
-.btn-ghost {
-  background: #fff;
-  color: var(--ink);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-ghost:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: var(--shadow);
-}
-
+/* ── Hero Scroll Indicator ───────────────────────────────── */
 .hero-scroll {
-  margin-top: 58px;
-  border: none;
-  background: transparent;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   color: var(--ink-faint);
   font-size: 13px;
-  display: grid;
-  gap: 8px;
-  justify-items: center;
+  transition: color 0.25s;
   cursor: pointer;
-  transition: color 0.3s;
-  animation: heroIn 0.9s 0.65s ease both;
 }
 
 .hero-scroll:hover {
@@ -226,70 +270,74 @@
 }
 
 .hero-arrow {
-  font-size: 18px;
-  animation: floaty 1.8s ease-in-out infinite;
+  font-size: 16px;
+  animation: bounceDown 1.8s ease-in-out infinite;
 }
 
-/* ── Mobile adjustments for hero ─────────────────────────── */
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ── Mobile Responsive Adjustments ───────────────────────── */
 @media (max-width: 640px) {
   .hero {
-    min-height: calc(100vh - 60px);
-    padding-top: 20px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .hero::before, .hero::after {
-    width: 80px;
-    height: 80px;
+    min-height: calc(100vh - 64px);
+    padding: 20px 14px 36px;
   }
 
   .hero-couple {
-    margin-top: 32px;
-    gap: clamp(12px, 4vw, 24px);
+    gap: clamp(10px, 3vw, 20px);
+    margin: 8px 0 20px;
   }
 
-  .hero-sub {
-    margin-top: 24px;
-    font-size: 14px;
-    padding: 0 8px;
-  }
-
-  .hero-actions {
-    margin-top: 24px;
-    gap: 10px;
-  }
-
-  .btn {
-    padding: 13px 24px;
-    font-size: 14px;
-  }
-
-  .hero-scroll {
-    margin-top: 36px;
-  }
-}
-
-@media (max-width: 380px) {
-  .hero-avatar > span,
-  .hero-avatar > img {
-    width: 90px;
-    height: 90px;
-    font-size: 40px;
+  .avatar-frame {
+    width: clamp(88px, 24vw, 115px);
+    height: clamp(88px, 24vw, 115px);
   }
 
   .hero-avatar figcaption {
     font-size: 16px;
   }
 
-  .btn {
-    padding: 12px 20px;
-    font-size: 13px;
-    width: 100%;
+  .hero-role-pill {
+    padding: 3px 10px;
+    font-size: 10px;
   }
 
   .hero-actions {
     flex-direction: column;
     align-items: stretch;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .cal-dropdown-wrap {
+    width: 100%;
+  }
+
+  .cal-dropdown-menu {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .hero-scroll {
+    margin-top: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .avatar-frame {
+    width: 84px;
+    height: 84px;
+  }
+
+  .hero-avatar figcaption {
+    font-size: 14px;
   }
 }

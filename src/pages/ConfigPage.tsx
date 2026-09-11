@@ -773,6 +773,14 @@ export default function ConfigPage() {
                 </div>
               </div>
             )}
+            <label className="cfg-field" style={{ marginTop: 16 }}>
+              <span>Link nhạc nền MP3 (để trống sẽ dùng bản piano lãng mạn mặc định)</span>
+              <input
+                value={config.musicUrl ?? ''}
+                placeholder="https://.../romantic-music.mp3"
+                onChange={(e) => set('musicUrl', e.target.value)}
+              />
+            </label>
           </section>
         )}
 

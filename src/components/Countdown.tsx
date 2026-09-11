@@ -17,7 +17,6 @@ const UNITS = [
 export default function Countdown() {
   const { config } = useConfigStore()
   const [left, setLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-  const [prevLeft, setPrevLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const [done, setDone] = useState(false)
 
   useEffect(() => {
@@ -31,14 +30,11 @@ export default function Countdown() {
         return
       }
       setDone(false)
-      setLeft(prev => {
-        setPrevLeft(prev)
-        return {
-          days: Math.floor(diff / 86400000),
-          hours: Math.floor((diff % 86400000) / 3600000),
-          minutes: Math.floor((diff % 3600000) / 60000),
-          seconds: Math.floor((diff % 60000) / 1000),
-        }
+      setLeft({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
       })
     }
 
@@ -49,37 +45,47 @@ export default function Countdown() {
 
   return (
     <div className={`countdown-block reveal ${done ? 'celebration' : ''}`}>
-      <div className="section-head">
+      <div className="section-head countdown-head">
+        <p className="section-script-subtitle">Waiting For The Big Day</p>
         <h2>Đếm Ngược Tới Ngày Vui</h2>
         <div className="section-rule" />
-        <p>Từng khoảnh khắc đều đưa chúng tôi đến gần hơn với ngày tân hôn.</p>
+        <p className="section-description">
+          Từng khoảnh khắc trôi qua đều đưa chúng tôi đến gần hơn với ngày chung đôi.
+        </p>
       </div>
 
       <div className="card countdown-card">
-        <span className="countdown-badge pulse-badge">{config.eventBadge}</span>
-        <p className="countdown-date">
-          {config.eventWeekday}, {config.eventDate}
+        <div className="countdown-top-badge pulse-badge">
+          <span>⏳ {config.eventBadge}</span>
+        </div>
+
+        <p className="countdown-date-str">
+          {config.eventWeekday}, ngày {config.eventDate} ({config.eventTime})
         </p>
 
+        {/* 4 tiles kept on a single row with fluid sizing */}
         <div className="countdown-grid">
           {UNITS.map((u) => {
             const currentVal = left[u.key as keyof typeof left]
-            const prevVal = prevLeft[u.key as keyof typeof prevLeft]
-            const isFlipping = currentVal !== prevVal
             return (
-              <div key={u.key} className={`countdown-tile flip-container ${u.cls}`}>
-                <div className={`flip-card ${isFlipping ? 'flipping' : ''}`}>
-                  <strong>{String(currentVal).padStart(2, '0')}</strong>
+              <div key={u.key} className={`countdown-tile ${u.cls}`}>
+                <div className="tile-glow" />
+                <div className="countdown-number">
+                  <span>{String(currentVal).padStart(2, '0')}</span>
                 </div>
-                <small>{u.label}</small>
+                <span className="countdown-label">{u.label}</span>
               </div>
             )
           })}
         </div>
 
-        <p className="countdown-note">
-          {done ? '✨ Khoảnh khắc hạnh phúc đã đến! ✨' : 'Hẹn gặp Quý Khách trong ngày vui!'}
-        </p>
+        <div className="countdown-footer-note">
+          {done ? (
+            <span className="countdown-celebrate">✨ Khoảnh khắc hạnh phúc đã đến! ✨</span>
+          ) : (
+            <span>Hân hạnh được đón tiếp Quý Khách trong ngày trọng đại!</span>
+          )}
+        </div>
       </div>
     </div>
   )

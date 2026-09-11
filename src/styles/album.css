@@ -1,35 +1,29 @@
+/* ═══════════════════════════════════════════════════════════
+   ALBUM & LIGHTBOX STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Album Grid ──────────────────────────────────────────── */
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  grid-auto-rows: 20px;
-  gap: 22px;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 10px;
 }
 
 .album-cell {
-  border: none;
-  padding: 0;
-  cursor: pointer;
+  position: relative;
+  aspect-ratio: 1 / 1;
   border-radius: 18px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: #f5eff2;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
-  position: relative;
-  /* Allow variable height for masonry effect via JS if applied, or just default aspect */
-  height: 100%;
-  grid-row-end: span 15; /* Base span */
-}
-
-.album-cell:nth-child(2n) {
-  grid-row-end: span 18;
-}
-.album-cell:nth-child(3n) {
-  grid-row-end: span 12;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s;
+  display: block;
+  width: 100%;
 }
 
 .album-cell:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px) scale(1.02);
   box-shadow: var(--shadow);
   z-index: 2;
 }
@@ -38,230 +32,199 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.5s ease;
 }
 
 .album-cell:hover img {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
-.album-cell::after {
-  content: '';
+.album-cell-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 50%);
+  background: rgba(30, 20, 25, 0.3);
+  display: grid;
+  place-items: center;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.25s;
 }
 
-.album-cell:hover::after {
+.album-cell:hover .album-cell-overlay {
   opacity: 1;
 }
 
-.album-cell::before {
-  content: attr(data-index);
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  color: #fff;
-  font-family: var(--font-heading);
-  font-size: 18px;
-  font-weight: 600;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s;
-  z-index: 1;
-}
-
-.album-cell:hover::before {
-  opacity: 1;
-  transform: translateY(0);
+.album-cell-zoom {
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .album-empty {
   text-align: center;
+  padding: 48px 24px;
+  color: var(--ink-soft);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.album-empty-icon {
+  font-size: 44px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.album-empty-sub {
+  margin-top: 8px;
+  font-size: 13px;
   color: var(--ink-faint);
-  padding: 60px 20px;
-  line-height: 1.8;
-  grid-column: 1 / -1;
-  border: 2px dashed rgba(0,0,0,0.1);
-  border-radius: 20px;
 }
 
 .album-empty code {
-  background: #fff;
-  padding: 4px 10px;
-  border-radius: 6px;
+  background: rgba(212, 56, 105, 0.08);
   color: var(--accent);
-  box-shadow: var(--shadow-sm);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
+/* ── Lightbox Modal ──────────────────────────────────────── */
 .lightbox {
   position: fixed;
   inset: 0;
   z-index: 300;
-  background: rgba(15, 15, 20, 0.85);
-  backdrop-filter: blur(12px);
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  animation: lbIn 0.3s ease-out;
-}
-
-@keyframes lbIn {
-  from { opacity: 0; backdrop-filter: blur(0px); }
-  to { opacity: 1; backdrop-filter: blur(12px); }
-}
-
-.lb-image {
-  max-width: min(92vw, 900px);
-  max-height: 86vh;
-  border-radius: 14px;
-  object-fit: contain;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  animation: imgZoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes imgZoom {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.lb-close,
-.lb-nav {
-  position: absolute;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(4px);
-  color: #fff;
-  cursor: pointer;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  transition: background 0.3s, transform 0.3s;
-}
-
-.lb-close:hover,
-.lb-nav:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.1);
+  background: rgba(12, 8, 10, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top, 24px) + 16px) 16px calc(env(safe-area-inset-bottom, 24px) + 16px);
+  touch-action: none;
 }
 
 .lb-close {
-  top: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  font-size: 22px;
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 16px) + 14px);
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  z-index: 320;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.lb-close:active,
+.lb-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.08);
 }
 
 .lb-nav {
+  position: absolute;
   top: 50%;
-  width: 56px;
-  height: 56px;
-  font-size: 34px;
-  line-height: 1;
   transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 32px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  z-index: 310;
+  transition: background 0.2s, transform 0.2s;
 }
 
+.lb-nav:active,
 .lb-nav:hover {
-  transform: translateY(-50%) scale(1.1);
+  background: rgba(255, 255, 255, 0.32);
+  transform: translateY(-50%) scale(1.08);
 }
 
-.lb-nav.prev {
-  left: 24px;
+.lb-nav.prev { left: 16px; }
+.lb-nav.next { right: 16px; }
+
+.lb-image-container {
+  max-width: min(94vw, 960px);
+  max-height: 82vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.lb-nav.next {
-  right: 24px;
+.lb-image {
+  max-width: 100%;
+  max-height: 82vh;
+  border-radius: 14px;
+  object-fit: contain;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  user-select: none;
 }
 
 .lb-counter {
   position: absolute;
-  bottom: 26px;
-  color: #fff;
-  font-family: var(--font-heading);
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
-  background: rgba(0,0,0,0.4);
-  padding: 6px 16px;
+  bottom: calc(env(safe-area-inset-bottom, 16px) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 18px;
   border-radius: 999px;
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .swipe-indicator {
-  display: none;
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 16px) + 52px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11.5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
-@media (max-width: 860px) {
+/* ── Mobile Responsive Grid ──────────────────────────────── */
+@media (max-width: 768px) {
   .album-grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: auto;
-    gap: 14px;
-  }
-
-  .album-cell,
-  .album-cell:nth-child(2n),
-  .album-cell:nth-child(3n) {
-    grid-row-end: auto;
-    aspect-ratio: 3 / 4;
-    height: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .album-grid {
-    gap: 10px;
+    gap: 12px;
   }
 
   .album-cell {
-    border-radius: 12px;
+    border-radius: 14px;
   }
 
   .lb-nav {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     font-size: 26px;
   }
 
-  .lb-close {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-    top: 16px;
-    right: 16px;
+  .lb-nav.prev { left: 10px; }
+  .lb-nav.next { right: 10px; }
+}
+
+@media (max-width: 360px) {
+  .album-grid {
+    gap: 8px;
   }
 
-  .lb-nav.prev {
-    left: 12px;
-  }
-
-  .lb-nav.next {
-    right: 12px;
-  }
-
-  .lb-image {
+  .album-cell {
     border-radius: 10px;
-    max-width: 96vw;
-  }
-
-  .lb-counter {
-    bottom: 20px;
-    font-size: 13px;
-    padding: 5px 14px;
-  }
-
-  .swipe-indicator {
-    display: block;
-    position: absolute;
-    bottom: 70px;
-    color: rgba(255,255,255,0.6);
-    font-size: 12px;
-    letter-spacing: 1px;
-    animation: fadePulse 2s infinite;
-  }
-  @keyframes fadePulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.9; }
   }
 }
