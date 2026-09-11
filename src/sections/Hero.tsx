@@ -1,10 +1,20 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useConfigStore } from '../store'
 import { getGoogleCalendarUrl, downloadIcsFile } from '../utils/calendar'
 
 export default function Hero() {
   const { config } = useConfigStore()
+  const [searchParams] = useSearchParams()
   const [showCalMenu, setShowCalMenu] = useState(false)
+
+  const sideParam = searchParams.get('side') || searchParams.get('party')
+  const isGroom = sideParam === 'groom' || sideParam === 'nha-trai' || sideParam === 'tanhon'
+  const isBride = sideParam === 'bride' || sideParam === 'nha-gai' || sideParam === 'vuquy'
+  const activeParty = isGroom ? config.groomParty : isBride ? config.brideParty : null
+  const heroDateStr = activeParty
+    ? `${activeParty.weekday} • ${activeParty.date}`
+    : `${config.eventWeekday} • ${config.eventDate}`
 
   const go = (id: string) => {
     const el = document.getElementById(id)
@@ -15,12 +25,18 @@ export default function Hero() {
 
   const handleGoogleCal = () => {
     setShowCalMenu(false)
+    const activeDate = activeParty?.date || config.eventDate
+    const activeTime = activeParty?.time || config.eventTime
+    const activeVenue = activeParty?.venueName || config.venueName
+    const activeAddress = activeParty?.venueAddress || config.venueAddress
+    const activeTitle = activeParty?.title || 'Lễ Cưới'
+
     const url = getGoogleCalendarUrl({
-      title: `Lễ Cưới: ${config.groomName} & ${config.brideName}`,
+      title: `${activeTitle}: ${config.groomName} & ${config.brideName}`,
       details: `${config.invitationIntro}\n${config.invitationMessage}`,
-      location: `${config.venueName}, ${config.venueAddress}`,
-      dateStr: config.eventDate,
-      timeStr: config.eventTime,
+      location: `${activeVenue}, ${activeAddress}`,
+      dateStr: activeDate,
+      timeStr: activeTime,
     })
     window.open(url, '_blank', 'noopener,noreferrer')
   }
@@ -111,9 +127,7 @@ export default function Hero() {
       {/* Event date badge */}
       <div className="hero-date">
         <span className="date-icon">🗓️</span>
-        <p>
-          {config.eventWeekday} • {config.eventDate}
-        </p>
+        <p>{heroDateStr}</p>
       </div>
 
       {/* Subtitle */}

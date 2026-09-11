@@ -83,6 +83,9 @@ export default function ConfigPage() {
   // Cấu hình Nhà Gái / Nhà Trai trong tab Địa Điểm
   const [venuePartyTab, setVenuePartyTab] = useState<'bride' | 'groom'>('bride')
 
+  // Chọn loại link chung (Nhà Gái / Nhà Trai / Cả 2 bên)
+  const [commonLinkSide, setCommonLinkSide] = useState<'bride' | 'groom' | 'both'>('bride')
+
   // Tạo link custom cho từng khách
   const [guestNameInput, setGuestNameInput] = useState('')
   const [salutationInput, setSalutationInput] = useState('Kính gửi')
@@ -125,6 +128,29 @@ export default function ConfigPage() {
     side: 'bride' | 'groom' | 'both' = 'bride'
   ) => {
     const link = buildShareUrl(configId, guestName, side, salutation)
+    const displayName = guestName || 'Quý Khách'
+
+    if (side === 'both') {
+      const bride = config.brideParty || defaultConfig.brideParty
+      const groom = config.groomParty || defaultConfig.groomParty
+      return `${salutation} ${displayName}!
+
+Trân trọng kính mời ${displayName} đến tham dự và nâng ly chúc mừng Lễ Cưới của ${config.groomName} & ${config.brideName}.
+
+🌸 TIỆC NHÀ GÁI (${bride.title || 'LỄ VU QUY'}):
+🗓️ ${bride.weekday}, ngày ${bride.date} lúc ${bride.time}
+📍 ${bride.venueName} - ${bride.venueAddress}
+
+🤵 TIỆC NHÀ TRAI (${groom.title || 'LỄ TÂN HÔN'}):
+🗓️ ${groom.weekday}, ngày ${groom.date} lúc ${groom.time}
+📍 ${groom.venueName} - ${groom.venueAddress}
+
+Xem thiệp cưới & chỉ đường 1 chạm tại:
+${link}
+
+Sự hiện diện của ${displayName} là niềm vinh hạnh lớn cho gia đình chúng mình! 💖`
+    }
+
     const party =
       side === 'groom'
         ? config.groomParty || defaultConfig.groomParty
@@ -137,14 +163,14 @@ export default function ConfigPage() {
     const venueName = party.venueName || config.venueName
     const venueAddress = party.venueAddress || config.venueAddress
 
-    return `${salutation} ${guestName}!
+    return `${salutation} ${displayName}!
 
-Trân trọng kính mời ${guestName} đến tham dự và nâng ly chúc mừng ${ceremonyTitle} của ${config.groomName} & ${config.brideName} vào ${partyWeekday}, ngày ${partyDate} lúc ${partyTime} tại ${venueName} (${venueAddress}).
+Trân trọng kính mời ${displayName} đến tham dự và nâng ly chúc mừng ${ceremonyTitle} của ${config.groomName} & ${config.brideName} vào ${partyWeekday}, ngày ${partyDate} lúc ${partyTime} tại ${venueName} (${venueAddress}).
 
 Xem thiệp cưới & chỉ đường 1 chạm tại:
 ${link}
 
-Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chúng mình! 💖`
+Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình chúng mình! 💖`
   }
 
   const copyInvitationText = (
@@ -1211,44 +1237,90 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
 
         {tab === 'share' && (
           <>
-            {/* Card 1: Link Chung & Cấu Hình Lưu Trữ */}
+            {/* Card 1: Link Chung Phân Biệt Nhà Gái / Nhà Trai / Cả 2 Bên */}
             <section className="cfg-card">
-              <h2>Link chung mặc định</h2>
+              <h2>Link thiệp chung (Gửi nhiều người)</h2>
               <p className="cfg-hint">
-                Đây là link thiệp cưới chung có thể gửi cho nhiều người. Cấu hình được lưu trên server theo <strong>mã thiệp</strong>.
+                Chọn đối tượng khách mời để lấy đúng link và nội dung tin nhắn phù hợp:
               </p>
 
+              {/* Nút gạt chọn 3 loại link chung */}
+              <div className="cfg-party-toggle-bar">
+                <button
+                  type="button"
+                  className={`cfg-party-tab-btn ${commonLinkSide === 'bride' ? 'active' : ''}`}
+                  onClick={() => setCommonLinkSide('bride')}
+                >
+                  <span>🌸 Khách Nhà Gái (Vu Quy)</span>
+                </button>
+                <button
+                  type="button"
+                  className={`cfg-party-tab-btn ${commonLinkSide === 'groom' ? 'active' : ''}`}
+                  onClick={() => setCommonLinkSide('groom')}
+                >
+                  <span>🤵 Khách Nhà Trai (Tân Hôn)</span>
+                </button>
+                <button
+                  type="button"
+                  className={`cfg-party-tab-btn ${commonLinkSide === 'both' ? 'active' : ''}`}
+                  onClick={() => setCommonLinkSide('both')}
+                >
+                  <span>💖 Cả Hai Bên (Lễ Cưới)</span>
+                </button>
+              </div>
+
+              {/* Ghi chú trực quan cho link đang chọn */}
+              <div style={{ marginBottom: 14, padding: '10px 14px', background: '#fdf7f9', borderRadius: 10, border: '1px solid #f5e1ea' }}>
+                {commonLinkSide === 'bride' && (
+                  <p className="cfg-hint" style={{ margin: 0, color: '#8a1d3f' }}>
+                    🌸 <strong>Khách mở link này sẽ thấy:</strong> Tiêu đề <strong>{config.brideParty?.title || 'LỄ VU QUY'}</strong>, ngày {config.brideParty?.date || config.eventDate} lúc {config.brideParty?.time || '11:00'} và bản đồ tại {config.brideParty?.venueName || config.venueName}.
+                  </p>
+                )}
+                {commonLinkSide === 'groom' && (
+                  <p className="cfg-hint" style={{ margin: 0, color: '#1565c0' }}>
+                    🤵 <strong>Khách mở link này sẽ thấy:</strong> Tiêu đề <strong>{config.groomParty?.title || 'LỄ TÂN HÔN'}</strong>, ngày {config.groomParty?.date || '03/05/2027'} lúc {config.groomParty?.time || '11:30'} và bản đồ tại {config.groomParty?.venueName || 'Tư gia Nhà Trai'}.
+                  </p>
+                )}
+                {commonLinkSide === 'both' && (
+                  <p className="cfg-hint" style={{ margin: 0, color: '#7b1fa2' }}>
+                    💖 <strong>Khách mở link này sẽ thấy:</strong> Tiêu đề <strong>LỄ CƯỚI</strong> (không hiện Tân Hôn hay Vu Quy) và bao gồm thông tin địa điểm cả 2 nhà.
+                  </p>
+                )}
+              </div>
+
               <label className="cfg-field">
-                <span>Mã thiệp (chỉ chữ thường, số, dấu gạch ngang)</span>
+                <span>
+                  Đường dẫn thiệp ({commonLinkSide === 'bride' ? 'Nhà Gái' : commonLinkSide === 'groom' ? 'Nhà Trai' : 'Cả 2 bên'})
+                </span>
                 <input
-                  value={idDraft}
-                  placeholder={DEFAULT_CONFIG_ID}
-                  onChange={(e) => setIdDraft(e.target.value)}
-                  onBlur={commitId}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      commitId()
-                    }
-                  }}
+                  readOnly
+                  value={buildShareUrl(configId, '', commonLinkSide)}
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
                 />
               </label>
 
-              <label className="cfg-field">
-                <span>Đường dẫn gốc của thiệp</span>
-                <input readOnly value={buildShareUrl(configId)} onClick={(e) => (e.target as HTMLInputElement).select()} />
-              </label>
-
               <div className="cfg-row-actions">
-                <button className="cfg-btn primary" onClick={() => copyToClipboard(buildShareUrl(configId))}>
-                  📋 Copy link chung
+                <button
+                  className="cfg-btn primary"
+                  onClick={() => copyToClipboard(buildShareUrl(configId, '', commonLinkSide))}
+                >
+                  📋 Copy link {commonLinkSide === 'bride' ? 'Nhà Gái' : commonLinkSide === 'groom' ? 'Nhà Trai' : 'Cả 2 bên'}
                 </button>
+
+                <button
+                  className="cfg-btn success-btn"
+                  onClick={() => copyInvitationText('Quý Khách', 'Kính gửi', commonLinkSide)}
+                >
+                  💬 Copy tin nhắn Zalo / SMS
+                </button>
+
                 <button
                   className="cfg-btn ghost"
-                  onClick={() => window.open(buildShareUrl(configId), '_blank')}
+                  onClick={() => window.open(buildShareUrl(configId, '', commonLinkSide), '_blank')}
                 >
                   👁️ Xem như khách
                 </button>
+
                 <button
                   className="cfg-btn ghost"
                   onClick={() => void publish()}
@@ -1256,6 +1328,25 @@ Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chú
                 >
                   {syncLabel}
                 </button>
+              </div>
+
+              {/* Mã thiệp & Cấu hình máy chủ */}
+              <div style={{ marginTop: 18, paddingTop: 14, borderTop: '1px solid #eee' }}>
+                <label className="cfg-field">
+                  <span>Mã thiệp (chỉ chữ thường, số, dấu gạch ngang)</span>
+                  <input
+                    value={idDraft}
+                    placeholder={DEFAULT_CONFIG_ID}
+                    onChange={(e) => setIdDraft(e.target.value)}
+                    onBlur={commitId}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        commitId()
+                      }
+                    }}
+                  />
+                </label>
               </div>
             </section>
 

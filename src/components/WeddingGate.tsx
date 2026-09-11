@@ -18,7 +18,7 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
   // Personalized guest name & side from URL params
   const [guestName, setGuestName] = useState<string>('')
   const [salutation, setSalutation] = useState<string>('Kính gửi')
-  const [side, setSide] = useState<'bride' | 'groom' | null>(null)
+  const [side, setSide] = useState<'bride' | 'groom' | 'both' | null>(null)
 
   useEffect(() => {
     try {
@@ -35,6 +35,8 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
           setSide('groom')
         } else if (lower === 'bride' || lower === 'nha-gai' || lower === 'vuquy') {
           setSide('bride')
+        } else if (lower === 'both' || lower === 'ca-hai' || lower === 'all') {
+          setSide('both')
         }
       }
     } catch {
@@ -57,7 +59,7 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
           date: config.eventDate,
         }
       : {
-          title: config.heroTitle || 'LỄ THÀNH HÔN',
+          title: 'LỄ CƯỚI',
           weekday: config.eventWeekday,
           date: config.eventDate,
         }

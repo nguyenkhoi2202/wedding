@@ -17,6 +17,8 @@ export default function Invitation() {
   const sideParam = searchParams.get('side') || searchParams.get('party')
   const isGroom = sideParam === 'groom' || sideParam === 'nha-trai' || sideParam === 'tanhon'
   const isBride = sideParam === 'bride' || sideParam === 'nha-gai' || sideParam === 'vuquy'
+  const isBoth = sideParam === 'both' || sideParam === 'ca-hai' || (!isGroom && !isBride)
+
   const currentParty = isGroom
     ? config.groomParty
     : isBride
@@ -27,8 +29,12 @@ export default function Invitation() {
   const activeTime = currentParty?.time || config.eventTime
   const activeWeekday = currentParty?.weekday || config.eventWeekday
   const activeLunar = currentParty?.lunarDate || config.eventLunarDate
-  const activeBadge = currentParty?.badge || config.eventBadge
-  const activeTitle = currentParty?.title || 'LỄ THÀNH HÔN'
+  const activeBadge = isBoth
+    ? 'LỄ CƯỚI'
+    : currentParty?.badge || (isGroom ? 'Tiệc Nhà Trai' : 'Tiệc Nhà Gái')
+  const activeTitle = isBoth
+    ? 'LỄ CƯỚI'
+    : currentParty?.title || (isGroom ? 'LỄ TÂN HÔN' : 'LỄ VU QUY')
   const activeVenueName = currentParty?.venueName || config.venueName
   const activeVenueAddress = currentParty?.venueAddress || config.venueAddress
 

@@ -30,7 +30,7 @@ export function buildShareUrl(
   if (salutation && salutation.trim() && salutation.trim() !== 'Kính gửi') {
     params.push(`sal=${encodeURIComponent(salutation.trim())}`)
   }
-  if (side && side !== 'both') {
+  if (side) {
     params.push(`side=${side}`)
   }
   if (params.length > 0) {
