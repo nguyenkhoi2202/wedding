@@ -23,15 +23,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(8px) brightness(0.92) saturate(0.85);
-  transform: scale(1.06);
+  filter: blur(2px) brightness(0.96) saturate(0.95);
+  transform: scale(1.02);
 }
 
 .page-bg-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 250, 251, 0.68);
-  backdrop-filter: blur(3px);
+  background: radial-gradient(circle at center, rgba(255, 250, 251, 0.22) 0%, rgba(255, 245, 248, 0.38) 100%);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
 }
 
 /* ── Progress Bar ────────────────────────────────────────── */

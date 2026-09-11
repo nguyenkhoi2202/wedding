@@ -11,6 +11,7 @@ import FloatingPetals from '../components/FloatingPetals'
 import MusicPlayer from '../components/MusicPlayer'
 import WeddingGate from '../components/WeddingGate'
 import SparkleTrail from '../components/SparkleTrail'
+import ScrollLoveSpreader from '../components/ScrollLoveSpreader'
 import { useConfigStore } from '../store'
 import { useReveal } from '../hooks/useReveal'
 
@@ -63,6 +64,15 @@ export default function InvitationPage() {
 
       {/* Hiệu ứng chạm ngón tay / di chuột sao rơi lấp lánh thần tiên */}
       <SparkleTrail />
+
+      {/* Hiệu ứng cuộn tới đâu rải hoa và trái tim tình yêu tới đó & chạm nổ tim */}
+      <ScrollLoveSpreader />
+
+      {/* Vệt sao băng tình yêu lãng mạn */}
+      <div className="shooting-star-container" aria-hidden="true">
+        <span className="shooting-star star-1" />
+        <span className="shooting-star star-2" />
+      </div>
 
       {/* Top Reading Progress Bar */}
       <div

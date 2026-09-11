@@ -711,3 +711,93 @@
     display: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL & TAP LOVE FLUTTER SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+.scroll-love-spreader {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 95;
+  overflow: hidden;
+}
+
+.spreader-particle {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  animation: loveParticleFlutter 1.6s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 10px rgba(232, 23, 93, 0.45));
+}
+
+@keyframes loveParticleFlutter {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2) rotate(18deg) translateY(-20px);
+  }
+  60% {
+    opacity: 0.9;
+    transform: scale(1) rotate(-15deg) translateY(-50px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(40deg) translateY(-90px);
+  }
+}
+
+/* ── Romantic Shooting Stars ─────────────────────────────── */
+.shooting-star-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.shooting-star {
+  position: absolute;
+  width: 140px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.95), rgba(232, 23, 93, 0.7), transparent);
+  border-radius: 999px;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+  opacity: 0;
+  transform: rotate(-35deg);
+}
+
+.shooting-star.star-1 {
+  top: 18%;
+  right: -80px;
+  animation: shootingStarAnim 10s ease-in-out infinite 3s;
+}
+
+.shooting-star.star-2 {
+  top: 55%;
+  right: -80px;
+  animation: shootingStarAnim 14s ease-in-out infinite 8s;
+}
+
+@keyframes shootingStarAnim {
+  0% {
+    transform: translateX(0) translateY(0) rotate(-35deg);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  14% {
+    transform: translateX(-120vw) translateY(80vh) rotate(-35deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-120vw) translateY(80vh) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
