@@ -4,6 +4,7 @@ import {
   useConfigStore,
   defaultConfig,
   DEFAULT_CONFIG_ID,
+  imageToBase64,
   type TimelineItem,
   type WeddingConfig,
 } from '../store'
@@ -15,7 +16,7 @@ import {
   verifyPassword,
 } from '../remoteConfig'
 import { isGuest, leaveGuestMode } from '../viewMode'
-import { uploadImageToCloudinary } from '../cloudinary'
+import { uploadImageToCloudinary, uploadAudioToCloudinary } from '../cloudinary'
 import '../styles/layout.css'
 import '../styles/config.css'
 
@@ -167,6 +168,32 @@ export default function ConfigPage() {
     } catch (error) {
       console.error('Upload error:', error)
       flash('Không upload được ảnh')
+    }
+  }
+
+  const pickAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+
+    try {
+      flash('Đang tải tệp nhạc lên Cloudinary...')
+      const audioUrl = await uploadAudioToCloudinary(file)
+      set('musicUrl', audioUrl)
+      flash('✓ Tải nhạc thành công!')
+    } catch (err) {
+      console.warn('Cloudinary audio upload failed, trying fallback:', err)
+      if (file.size < 2.5 * 1024 * 1024) {
+        try {
+          const dataUrl = await imageToBase64(file)
+          set('musicUrl', dataUrl)
+          flash('✓ Đã lưu tệp nhạc vào cấu hình!')
+        } catch {
+          flash('Không đọc được tệp âm thanh này')
+        }
+      } else {
+        flash('Không upload được tệp nhạc, hãy kiểm tra dung lượng hoặc kết nối')
+      }
     }
   }
 
@@ -773,14 +800,97 @@ export default function ConfigPage() {
                 </div>
               </div>
             )}
-            <label className="cfg-field" style={{ marginTop: 16 }}>
-              <span>Link nhạc nền MP3 (để trống sẽ dùng bản piano lãng mạn mặc định)</span>
-              <input
-                value={config.musicUrl ?? ''}
-                placeholder="https://.../romantic-music.mp3"
-                onChange={(e) => set('musicUrl', e.target.value)}
-              />
-            </label>
+            {/* Cấu hình nhạc nền */}
+            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px dashed #e0d8dc' }}>
+              <h3 style={{ fontSize: 18, color: '#e8175d', marginBottom: 6 }}>Nhạc Nền Đám Cưới</h3>
+              <p className="cfg-hint" style={{ marginTop: 0 }}>
+                Bài hát tự động phát khi khách mở thiệp. Mặc định là bài <strong>"Một Đời" (14 Casper &amp; Bon Nghiêm)</strong>. Bạn có thể tải tệp nhạc từ máy tính/điện thoại lên.
+              </p>
+
+              <div style={{
+                marginTop: 12,
+                padding: 14,
+                borderRadius: 12,
+                background: '#fff',
+                border: '1px solid #eee',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>🎵</span>
+                    <div>
+                      <strong style={{ fontSize: 14, color: '#333' }}>
+                        {config.musicUrl === '/mot-doi.mp3' || !config.musicUrl
+                          ? 'Một Đời — 14 Casper & Bon Nghiêm (Mặc định)'
+                          : config.musicUrl.startsWith('data:')
+                          ? 'Tệp nhạc tải lên từ máy'
+                          : 'Nhạc nền tùy chỉnh'}
+                      </strong>
+                      <p style={{ margin: 0, fontSize: 12, color: '#888', wordBreak: 'break-all' }}>
+                        {config.musicUrl || '/mot-doi.mp3'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <audio
+                  key={config.musicUrl || '/mot-doi.mp3'}
+                  src={config.musicUrl || '/mot-doi.mp3'}
+                  controls
+                  style={{ width: '100%', height: 38, marginTop: 4 }}
+                />
+              </div>
+
+              {/* Nút bấm tải tệp từ máy / đặt lại / xóa */}
+              <div className="cfg-row-actions" style={{ marginTop: 14 }}>
+                <label className="cfg-btn primary" style={{ cursor: 'pointer' }}>
+                  <span>📁 Chọn tệp MP3 từ máy</span>
+                  <input
+                    type="file"
+                    accept="audio/mp3,audio/mpeg,audio/m4a,audio/wav,audio/*"
+                    style={{ display: 'none' }}
+                    onChange={pickAudio}
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  className="cfg-btn ghost"
+                  onClick={() => {
+                    set('musicUrl', '/mot-doi.mp3')
+                    flash('✓ Đã đặt lại về bài "Một Đời"')
+                  }}
+                  title="Đặt lại bài Một Đời"
+                >
+                  ↺ Đặt lại: Một Đời
+                </button>
+
+                {config.musicUrl && config.musicUrl !== '/mot-doi.mp3' && (
+                  <button
+                    type="button"
+                    className="cfg-btn ghost"
+                    onClick={() => {
+                      set('musicUrl', '')
+                      flash('Đã tắt nhạc nền')
+                    }}
+                  >
+                    ✕ Tắt nhạc
+                  </button>
+                )}
+              </div>
+
+              {/* Nhập link trực tiếp nếu có */}
+              <label className="cfg-field" style={{ marginTop: 14 }}>
+                <span>Hoặc nhập đường dẫn bài hát trực tiếp</span>
+                <input
+                  value={config.musicUrl ?? ''}
+                  placeholder="/mot-doi.mp3 hoặc https://.../bai-hat.mp3"
+                  onChange={(e) => set('musicUrl', e.target.value)}
+                />
+              </label>
+            </div>
           </section>
         )}
 

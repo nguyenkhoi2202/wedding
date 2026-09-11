@@ -158,7 +158,7 @@ export const defaultConfig: WeddingConfig = {
   accentColor: '#E8175D',
   backgroundColor: '#FFF5F7',
   backgroundImage: '',
-  musicUrl: '',
+  musicUrl: '/mot-doi.mp3',
 }
 
 /** Slug mặc định cho link chia sẻ, đổi được trong /config → tab Chia sẻ. */

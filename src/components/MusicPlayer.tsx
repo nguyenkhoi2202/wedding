@@ -4,8 +4,8 @@ interface MusicPlayerProps {
   url?: string
 }
 
-// Default romantic acoustic piano background melody
-const DEFAULT_MUSIC = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3'
+// Default wedding song: Một Đời (14 Casper & Bon Nghiêm)
+const DEFAULT_MUSIC = '/mot-doi.mp3'
 
 export default function MusicPlayer({ url }: MusicPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -82,7 +82,7 @@ export default function MusicPlayer({ url }: MusicPlayerProps) {
 
       {showHint && !isPlaying && (
         <div className="music-hint" onClick={toggle}>
-          <span>Bật nhạc nền ♫</span>
+          <span>Bật bài "Một Đời" ♫</span>
         </div>
       )}
 
@@ -91,7 +91,7 @@ export default function MusicPlayer({ url }: MusicPlayerProps) {
         className={`music-btn ${isPlaying ? 'playing' : ''}`}
         onClick={toggle}
         aria-label={isPlaying ? 'Tắt nhạc' : 'Bật nhạc'}
-        title={isPlaying ? 'Tắt nhạc nền' : 'Bật nhạc nền'}
+        title={isPlaying ? 'Tắt nhạc (Một Đời)' : 'Bật bài hát "Một Đời"'}
       >
         <div className="music-icon-wrap">
           <span className="music-disc">💿</span>

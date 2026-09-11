@@ -29,6 +29,30 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
   })
 }
 
+export async function uploadAudioToCloudinary(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('upload_preset', 'wedding_invitations')
+    formData.append('cloud_name', CLOUDINARY_CLOUD_NAME)
+
+    // Cloudinary handles audio files via /auto/upload or /video/upload
+    fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.secure_url) {
+          resolve(data.secure_url)
+        } else {
+          reject(new Error('Tải tệp âm thanh thất bại: ' + (data.error?.message || 'Lỗi tải tệp')))
+        }
+      })
+      .catch(error => reject(error))
+  })
+}
+
 export function openCloudinaryWidget(
   onSuccess: (url: string) => void,
   onError?: (error: any) => void
