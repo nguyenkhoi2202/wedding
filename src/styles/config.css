@@ -632,3 +632,143 @@
   border-color: #ef5350;
 }
 
+/* ── Tạo Link Custom Cho Từng Khách Mời ────────────────────── */
+.cfg-custom-guest-card {
+  margin-top: 28px;
+  background: #fff;
+}
+
+.cfg-guest-creator-box {
+  padding: 20px;
+  background: #fdfafb;
+  border-radius: 14px;
+  border: 1.5px solid #f2e2e7;
+  margin-top: 14px;
+}
+
+.cfg-guest-preview-box {
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #eadbe0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.preview-url-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.preview-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.preview-url {
+  font-size: 13px;
+  background: #f5f5f5;
+  padding: 4px 10px;
+  border-radius: 6px;
+  word-break: break-all;
+  color: #2b2327;
+}
+
+.cfg-guest-creator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.success-btn {
+  background: #2e7d32 !important;
+  color: #fff !important;
+}
+
+.success-btn:hover {
+  background: #1b5e20 !important;
+}
+
+.cfg-batch-box {
+  margin-top: 18px;
+  padding: 18px;
+  background: #fcf9fa;
+  border-radius: 14px;
+  border: 1px dashed #d4a359;
+}
+
+.cfg-batch-box h4 {
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.cfg-batch-box textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 13.5px;
+  margin-top: 8px;
+  resize: vertical;
+}
+
+.cfg-guest-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 14px;
+}
+
+.cfg-guest-card-item {
+  padding: 16px;
+  background: #faf8f9;
+  border-radius: 14px;
+  border: 1px solid #eedde2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cfg-guest-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cfg-guest-salutation {
+  display: inline-block;
+  font-size: 11.5px;
+  color: #888;
+  margin-right: 6px;
+}
+
+.cfg-guest-name {
+  font-size: 15.5px;
+  color: var(--ink);
+}
+
+.cfg-guest-link-field input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+}
+
+.cfg-guest-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+

@@ -80,12 +80,97 @@ export default function ConfigPage() {
   const [idDraft, setIdDraft] = useState(configId)
   const mountedRef = useRef(false)
 
+  // Tạo link custom cho từng khách
+  const [guestNameInput, setGuestNameInput] = useState('')
+  const [salutationInput, setSalutationInput] = useState('Kính gửi')
+  const [batchGuestsInput, setBatchGuestsInput] = useState('')
+  const [guestSearch, setGuestSearch] = useState('')
+  const [showBatchModal, setShowBatchModal] = useState(false)
+
   const set = <K extends keyof WeddingConfig>(key: K, value: WeddingConfig[K]) =>
     updateConfig({ [key]: value } as Partial<WeddingConfig>)
 
   const flash = (msg: string) => {
     setToast(msg)
     setTimeout(() => setToast(''), 2200)
+  }
+
+  const buildInvitationMessage = (guestName: string, salutation = 'Kính gửi') => {
+    const link = buildShareUrl(configId, guestName)
+    return `${salutation} ${guestName}!
+
+Trân trọng kính mời ${guestName} đến tham dự và nâng ly chúc mừng lễ thành hôn của ${config.groomName} & ${config.brideName} vào ${config.eventWeekday}, ngày ${config.eventDate} tại ${config.venueName}.
+
+Xem thiệp cưới & thông tin chi tiết tại:
+${link}
+
+Sự hiện diện của ${guestName} là niềm vinh hạnh cho gia đình chúng mình! 💖`
+  }
+
+  const copyInvitationText = (guestName: string, salutation = 'Kính gửi') => {
+    const text = buildInvitationMessage(guestName, salutation)
+    navigator.clipboard
+      .writeText(text)
+      .then(() => flash(`✓ Đã copy tin nhắn mời cho "${guestName}"`))
+      .catch(() => flash('Không copy được, vui lòng copy thủ công'))
+  }
+
+  const addCustomGuest = (nameToAdd: string, salutation = 'Kính gửi') => {
+    const trimmed = nameToAdd.trim()
+    if (!trimmed) return
+    const guests = config.customGuests || []
+    if (guests.some((g) => g.name.toLowerCase() === trimmed.toLowerCase())) {
+      flash(`Khách "${trimmed}" đã có trong danh sách`)
+      return
+    }
+    const newGuest = {
+      id: `g-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      name: trimmed,
+      salutation,
+    }
+    set('customGuests', [newGuest, ...guests])
+    setGuestNameInput('')
+    flash(`✓ Đã thêm "${trimmed}" vào danh sách khách mời`)
+  }
+
+  const handleAddBatchGuests = () => {
+    const lines = batchGuestsInput
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean)
+    if (lines.length === 0) return
+
+    const guests = [...(config.customGuests || [])]
+    let addedCount = 0
+
+    lines.forEach((line) => {
+      let cleanName = line
+      let sal = salutationInput
+      if (line.includes(':')) {
+        const parts = line.split(':')
+        sal = parts[0].trim()
+        cleanName = parts.slice(1).join(':').trim()
+      }
+      if (cleanName && !guests.some((g) => g.name.toLowerCase() === cleanName.toLowerCase())) {
+        guests.push({
+          id: `g-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          name: cleanName,
+          salutation: sal,
+        })
+        addedCount++
+      }
+    })
+
+    set('customGuests', guests)
+    setBatchGuestsInput('')
+    setShowBatchModal(false)
+    flash(`✓ Đã tạo link cho ${addedCount} khách mời mới!`)
+  }
+
+  const removeCustomGuest = (id: string) => {
+    const guests = (config.customGuests || []).filter((g) => g.id !== id)
+    set('customGuests', guests)
+    flash('✓ Đã xóa khách khỏi danh sách')
   }
 
   /** Đẩy cấu hình hiện tại lên server và ghi nhận mốc thời gian server trả về. */
@@ -959,57 +1044,292 @@ export default function ConfigPage() {
         )}
 
         {tab === 'share' && (
-          <section className="cfg-card">
-            <h2>Link chia sẻ</h2>
-            <p className="cfg-hint">
-              Cấu hình được lưu trên server theo <strong>mã thiệp</strong> dưới đây. Link
-              chia sẻ không đổi: bạn sửa nội dung bất cứ lúc nào, khách mở lại đúng link cũ
-              là thấy bản mới nhất. Nhớ mã này: muốn chỉnh thiệp từ máy khác, bạn nhập lại
-              đúng mã ở đây là cấu hình cũ tự tải về.
-            </p>
+          <>
+            {/* Card 1: Link Chung & Cấu Hình Lưu Trữ */}
+            <section className="cfg-card">
+              <h2>Link chung mặc định</h2>
+              <p className="cfg-hint">
+                Đây là link thiệp cưới chung có thể gửi cho nhiều người. Cấu hình được lưu trên server theo <strong>mã thiệp</strong>.
+              </p>
 
-            <label className="cfg-field">
-              <span>Mã thiệp (chỉ chữ thường, số, dấu gạch ngang)</span>
-              <input
-                value={idDraft}
-                placeholder={DEFAULT_CONFIG_ID}
-                onChange={(e) => setIdDraft(e.target.value)}
-                onBlur={commitId}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    commitId()
-                  }
-                }}
-              />
-            </label>
+              <label className="cfg-field">
+                <span>Mã thiệp (chỉ chữ thường, số, dấu gạch ngang)</span>
+                <input
+                  value={idDraft}
+                  placeholder={DEFAULT_CONFIG_ID}
+                  onChange={(e) => setIdDraft(e.target.value)}
+                  onBlur={commitId}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      commitId()
+                    }
+                  }}
+                />
+              </label>
 
-            <label className="cfg-field">
-              <span>Link gửi cho khách</span>
-              <input readOnly value={buildShareUrl(configId)} onClick={(e) => (e.target as HTMLInputElement).select()} />
-            </label>
+              <label className="cfg-field">
+                <span>Đường dẫn gốc của thiệp</span>
+                <input readOnly value={buildShareUrl(configId)} onClick={(e) => (e.target as HTMLInputElement).select()} />
+              </label>
 
-            <div className="cfg-row-actions">
-              <button className="cfg-btn primary" onClick={() => copyToClipboard(buildShareUrl(configId))}>
-                📋 Copy link
-              </button>
-              <button
-                className="cfg-btn ghost"
-                onClick={() => window.open(buildShareUrl(configId), '_blank')}
-              >
-                👁️ Xem như khách
-              </button>
-              <button
-                className="cfg-btn ghost"
-                onClick={() => void publish()}
-                disabled={sync === 'saving'}
-              >
-                {syncLabel}
-              </button>
-            </div>
+              <div className="cfg-row-actions">
+                <button className="cfg-btn primary" onClick={() => copyToClipboard(buildShareUrl(configId))}>
+                  📋 Copy link chung
+                </button>
+                <button
+                  className="cfg-btn ghost"
+                  onClick={() => window.open(buildShareUrl(configId), '_blank')}
+                >
+                  👁️ Xem như khách
+                </button>
+                <button
+                  className="cfg-btn ghost"
+                  onClick={() => void publish()}
+                  disabled={sync === 'saving'}
+                >
+                  {syncLabel}
+                </button>
+              </div>
+            </section>
 
-            <div className="cfg-note">
-              <strong>Cần bật một lần trên Vercel</strong>
+            {/* Card 2: Tạo Link Cá Nhân Hóa Từng Khách Mời (VIP) */}
+            <section className="cfg-card cfg-custom-guest-card">
+              <div className="cfg-card-header-row">
+                <div>
+                  <h2>💌 Tạo link riêng cho từng khách mời</h2>
+                  <p className="cfg-hint">
+                    Khi khách mở link riêng, thiệp cưới sẽ hiện đích danh tên khách: <strong>"Kính gửi: Anh Tuấn"</strong> trên phong bì hoàng gia 3D và thư mời!
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="cfg-btn ghost"
+                  onClick={() => setShowBatchModal(!showBatchModal)}
+                >
+                  ⚡ {showBatchModal ? 'Đóng nhập nhanh' : 'Nhập nhanh nhiều khách'}
+                </button>
+              </div>
+
+              {/* Form tạo nhanh 1 khách */}
+              <div className="cfg-guest-creator-box">
+                <div className="cfg-grid-2">
+                  <div className="cfg-field">
+                    <span>Xưng hô</span>
+                    <select
+                      value={salutationInput}
+                      onChange={(e) => setSalutationInput(e.target.value)}
+                    >
+                      <option value="Kính gửi">Kính gửi (Lịch sự, trang trọng)</option>
+                      <option value="Thân gửi">Thân gửi (Bạn bè thân thiết)</option>
+                      <option value="Thân mời">Thân mời (Anh chị, bạn bè)</option>
+                      <option value="Gửi tặng">Gửi tặng</option>
+                    </select>
+                  </div>
+
+                  <div className="cfg-field">
+                    <span>Tên khách mời *</span>
+                    <input
+                      value={guestNameInput}
+                      placeholder="VD: Anh Tuấn, Chị Mai & Người Thương..."
+                      onChange={(e) => setGuestNameInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          addCustomGuest(guestNameInput, salutationInput)
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Live Preview of Custom Link */}
+                {guestNameInput.trim() && (
+                  <div className="cfg-guest-preview-box">
+                    <div className="preview-url-row">
+                      <span className="preview-label">Link riêng:</span>
+                      <code className="preview-url">{buildShareUrl(configId, guestNameInput)}</code>
+                    </div>
+
+                    <div className="cfg-guest-creator-actions">
+                      <button
+                        type="button"
+                        className="cfg-btn primary"
+                        onClick={() => copyToClipboard(buildShareUrl(configId, guestNameInput))}
+                      >
+                        📋 Copy link
+                      </button>
+
+                      <button
+                        type="button"
+                        className="cfg-btn success-btn"
+                        onClick={() => copyInvitationText(guestNameInput, salutationInput)}
+                      >
+                        💬 Copy tin nhắn Zalo / SMS
+                      </button>
+
+                      <button
+                        type="button"
+                        className="cfg-btn ghost"
+                        onClick={() => window.open(buildShareUrl(configId, guestNameInput), '_blank')}
+                      >
+                        👁️ Xem thử
+                      </button>
+
+                      <button
+                        type="button"
+                        className="cfg-btn ghost"
+                        onClick={() => addCustomGuest(guestNameInput, salutationInput)}
+                      >
+                        ➕ Lưu vào danh sách
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Hộp nhập nhanh hàng loạt (Batch input) */}
+              {showBatchModal && (
+                <div className="cfg-batch-box">
+                  <h4>⚡ Nhập nhanh danh sách nhiều khách (Mỗi khách 1 dòng)</h4>
+                  <p className="cfg-hint">
+                    Bạn có thể copy từ file Excel hoặc ghi chú rồi dán vào đây:
+                  </p>
+                  <textarea
+                    rows={5}
+                    value={batchGuestsInput}
+                    onChange={(e) => setBatchGuestsInput(e.target.value)}
+                    placeholder={'Anh Hải\nChị Thảo & Bạn\nGia Đình Bác Tư\nBạn Hùng Đại Học...'}
+                  />
+                  <div className="cfg-row-actions" style={{ marginTop: 10 }}>
+                    <button
+                      type="button"
+                      className="cfg-btn primary"
+                      onClick={handleAddBatchGuests}
+                    >
+                      ✓ Tạo link cho tất cả khách này
+                    </button>
+                    <button
+                      type="button"
+                      className="cfg-btn ghost"
+                      onClick={() => setShowBatchModal(false)}
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Bảng Danh Sách Khách Mời Đã Lưu */}
+              <div className="cfg-guest-list-wrap">
+                <div className="cfg-card-header-row" style={{ marginTop: 24, marginBottom: 14 }}>
+                  <h3>
+                    👥 Danh sách khách mời đã tạo ({config.customGuests?.length || 0})
+                  </h3>
+
+                  {(config.customGuests && config.customGuests.length > 0) && (
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        placeholder="🔍 Tìm tên khách..."
+                        value={guestSearch}
+                        onChange={(e) => setGuestSearch(e.target.value)}
+                        style={{ padding: '6px 12px', fontSize: 13, borderRadius: 8, border: '1px solid #ccc' }}
+                      />
+                      <button
+                        type="button"
+                        className="cfg-btn cfg-btn-danger-sm"
+                        onClick={() => {
+                          if (window.confirm('Bạn có chắc muốn xoá toàn bộ danh sách khách mời?')) {
+                            set('customGuests', [])
+                            flash('✓ Đã xoá toàn bộ danh sách khách')
+                          }
+                        }}
+                      >
+                        Xoá tất cả
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {(!config.customGuests || config.customGuests.length === 0) ? (
+                  <div className="cfg-empty-wishes">
+                    <p>Chưa có khách mời nào trong danh sách lưu sẵn.</p>
+                    <small>Bạn có thể nhập tên khách ở trên để tạo link và bấm "Lưu vào danh sách" để gửi dần.</small>
+                  </div>
+                ) : (
+                  <div className="cfg-guest-items-grid">
+                    {config.customGuests
+                      .filter((g) =>
+                        !guestSearch ||
+                        g.name.toLowerCase().includes(guestSearch.toLowerCase())
+                      )
+                      .map((g) => {
+                        const guestUrl = buildShareUrl(configId, g.name)
+                        return (
+                          <div key={g.id} className="cfg-guest-card-item">
+                            <div className="cfg-guest-card-header">
+                              <div>
+                                <span className="cfg-guest-salutation">{g.salutation || 'Kính gửi'}</span>
+                                <strong className="cfg-guest-name">{g.name}</strong>
+                              </div>
+                              <button
+                                type="button"
+                                className="cfg-btn cfg-btn-danger-sm"
+                                onClick={() => removeCustomGuest(g.id)}
+                                title="Xoá khách này khỏi danh sách"
+                              >
+                                ✕
+                              </button>
+                            </div>
+
+                            <div className="cfg-guest-link-field">
+                              <input
+                                readOnly
+                                value={guestUrl}
+                                onClick={(e) => (e.target as HTMLInputElement).select()}
+                              />
+                            </div>
+
+                            <div className="cfg-guest-card-actions">
+                              <button
+                                type="button"
+                                className="cfg-btn primary"
+                                style={{ padding: '6px 12px', fontSize: 12.5 }}
+                                onClick={() => copyToClipboard(guestUrl)}
+                              >
+                                📋 Copy Link
+                              </button>
+
+                              <button
+                                type="button"
+                                className="cfg-btn success-btn"
+                                style={{ padding: '6px 12px', fontSize: 12.5 }}
+                                onClick={() => copyInvitationText(g.name, g.salutation)}
+                              >
+                                💬 Copy Lời Mời
+                              </button>
+
+                              <button
+                                type="button"
+                                className="cfg-btn ghost"
+                                style={{ padding: '6px 12px', fontSize: 12.5 }}
+                                onClick={() => window.open(guestUrl, '_blank')}
+                              >
+                                👁️ Mở
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Hướng dẫn cấu hình Vercel */}
+            <div className="cfg-note" style={{ marginTop: 24 }}>
+              <strong>Lưu ý đồng bộ Vercel Blob</strong>
               <ol>
                 <li>
                   Vercel Dashboard → chọn project → tab <em>Storage</em> → <em>Create Database</em>{' '}
@@ -1024,7 +1344,7 @@ export default function ConfigPage() {
                 <li>Redeploy lại project để các biến trên có hiệu lực.</li>
               </ol>
             </div>
-          </section>
+          </>
         )}
       </div>
 

@@ -20,6 +20,12 @@ export interface GuestWish {
   isLiked?: boolean
 }
 
+export interface CustomGuest {
+  id: string
+  name: string
+  salutation?: string
+}
+
 export interface WeddingConfig {
   // Hero
   heroTitle: string
@@ -87,6 +93,9 @@ export interface WeddingConfig {
 
   // Sổ lưu bút
   wishes: GuestWish[]
+
+  // Khách mời cá nhân hóa
+  customGuests: CustomGuest[]
 
   // Giao diện
   accentColor: string
@@ -157,6 +166,7 @@ export const defaultConfig: WeddingConfig = {
 
   album: [],
   wishes: [],
+  customGuests: [],
 
   bankName: 'Vietcombank',
   bankAccount: '0123456789',
