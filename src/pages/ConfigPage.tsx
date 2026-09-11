@@ -27,6 +27,7 @@ type TabId =
   | 'timeline'
   | 'album'
   | 'gift'
+  | 'guestbook'
   | 'email'
   | 'theme'
   | 'share'
@@ -45,6 +46,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'timeline', label: '🕘 Lịch trình' },
   { id: 'album', label: '📸 Album' },
   { id: 'gift', label: '🎁 Mừng cưới' },
+  { id: 'guestbook', label: '📖 Sổ lưu bút' },
   { id: 'email', label: '✉️ Email' },
   { id: 'theme', label: '🎨 Giao diện' },
   { id: 'share', label: '🔗 Chia sẻ' },
@@ -658,6 +660,68 @@ export default function ConfigPage() {
               onPick={(e) => pickImage(e, 'qrCode')}
               onClear={() => set('qrCode', '')}
             />
+          </section>
+        )}
+
+        {tab === 'guestbook' && (
+          <section className="cfg-card">
+            <div className="cfg-card-header-row">
+              <div>
+                <h2>Quản lý Sổ Lưu Bút ({config.wishes?.length || 0})</h2>
+                <p className="cfg-hint">
+                  Xem và xóa các lời chúc phúc của khách mời đã gửi trên trang thiệp cưới.
+                </p>
+              </div>
+              {config.wishes && config.wishes.length > 0 && (
+                <button
+                  type="button"
+                  className="cfg-btn cfg-btn-danger"
+                  onClick={() => {
+                    if (window.confirm('Bạn có chắc chắn muốn xoá TOÀN BỘ lời chúc trong sổ lưu bút không?')) {
+                      set('wishes', [])
+                      flash('✓ Đã xoá toàn bộ lời chúc')
+                    }
+                  }}
+                >
+                  🗑️ Xoá tất cả ({config.wishes.length})
+                </button>
+              )}
+            </div>
+
+            {(!config.wishes || config.wishes.length === 0) ? (
+              <div className="cfg-empty-wishes">
+                <p>Chưa có lời chúc nào từ khách mời.</p>
+                <small>Khi khách ký tên gửi lời chúc trên web, danh sách sẽ hiển thị tại đây để bạn kiểm duyệt và quản lý.</small>
+              </div>
+            ) : (
+              <div className="cfg-wishes-list">
+                {config.wishes.map((w) => (
+                  <div key={w.id} className="cfg-wish-item">
+                    <div className="cfg-wish-item-head">
+                      <div className="cfg-wish-author-info">
+                        <strong>{w.name}</strong>
+                        <span className="cfg-wish-relation">{w.relation}</span>
+                        <span className="cfg-wish-time">• {w.time}</span>
+                        <span className="cfg-wish-likes">❤️ {w.likes || 0}</span>
+                      </div>
+                      <button
+                        type="button"
+                        className="cfg-btn cfg-btn-danger-sm"
+                        onClick={() => {
+                          const remaining = config.wishes.filter((item) => item.id !== w.id)
+                          set('wishes', remaining)
+                          flash(`✓ Đã xoá lời chúc của "${w.name}"`)
+                        }}
+                        title="Xoá lời chúc này"
+                      >
+                        🗑️ Xoá
+                      </button>
+                    </div>
+                    <p className="cfg-wish-item-msg">{w.message}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

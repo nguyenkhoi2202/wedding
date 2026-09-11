@@ -10,6 +10,16 @@ export interface TimelineItem {
   note: string
 }
 
+export interface GuestWish {
+  id: string
+  name: string
+  relation: string
+  message: string
+  time: string
+  likes: number
+  isLiked?: boolean
+}
+
 export interface WeddingConfig {
   // Hero
   heroTitle: string
@@ -74,6 +84,9 @@ export interface WeddingConfig {
   emailjsServiceId: string
   emailjsTemplateId: string
   emailjsPublicKey: string
+
+  // Sổ lưu bút
+  wishes: GuestWish[]
 
   // Giao diện
   accentColor: string
@@ -143,6 +156,7 @@ export const defaultConfig: WeddingConfig = {
   ],
 
   album: [],
+  wishes: [],
 
   bankName: 'Vietcombank',
   bankAccount: '0123456789',

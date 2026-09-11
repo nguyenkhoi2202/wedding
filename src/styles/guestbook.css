@@ -177,6 +177,38 @@
   gap: 20px;
 }
 
+/* Empty State */
+.wishes-empty {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 38px 24px;
+  text-align: center;
+  border: 1.5px dashed rgba(212, 163, 89, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+}
+
+.wishes-empty-icon {
+  font-size: 38px;
+  display: block;
+  margin-bottom: 12px;
+  animation: floatyPulse 2.5s infinite;
+}
+
+.wishes-empty p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wishes-empty-sub {
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
 /* Wish Note Card (Like a pinned stationery note) */
 .wish-card {
   position: relative;
