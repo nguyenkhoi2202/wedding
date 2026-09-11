@@ -116,11 +116,23 @@ export default function MusicPlayer({ url }: MusicPlayerProps) {
       >
         <div className="music-icon-wrap">
           <span className="music-disc">💿</span>
-          {isPlaying && (
-            <span className="music-note-float">🎵</span>
+          {isPlaying ? (
+            <div className="music-bars" aria-hidden="true">
+              <span className="mbar mb1" />
+              <span className="mbar mb2" />
+              <span className="mbar mb3" />
+            </div>
+          ) : (
+            <span className="music-note-muted">🔇</span>
           )}
         </div>
       </button>
+
+      {/* Song title banner */}
+      <div className={`music-song-tag ${isPlaying ? 'playing' : ''}`}>
+        <span className="song-dot" />
+        <span className="song-title">Một Đời • 14 Casper & Bon</span>
+      </div>
     </div>
   )
 }

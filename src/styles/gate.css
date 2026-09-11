@@ -296,6 +296,25 @@
   margin-top: 10px;
 }
 
+.gate-vip-guest-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 8px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(232, 23, 93, 0.12), rgba(212, 163, 89, 0.18));
+  border: 1px solid rgba(212, 163, 89, 0.45);
+  font-size: 13.5px;
+  color: var(--accent);
+  box-shadow: 0 4px 16px rgba(212, 163, 89, 0.15);
+  animation: floatyPulse 2.5s infinite;
+}
+
+.vip-badge-icon {
+  font-size: 15px;
+}
+
 .gate-event-title {
   font-family: var(--font-heading);
   font-size: 16px;

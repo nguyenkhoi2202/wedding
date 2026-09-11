@@ -15,6 +15,21 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
   const brideInitial = config.brideName ? config.brideName.trim().slice(-1).toUpperCase() : 'N'
   const monogram = `${groomInitial} ♡ ${brideInitial}`
 
+  // Personalized guest name from URL params (?to=... or ?guest=...)
+  const [guestName, setGuestName] = useState<string>('')
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const to = params.get('to') || params.get('guest') || params.get('name')
+      if (to && to.trim()) {
+        setGuestName(to.trim())
+      }
+    } catch {
+      // Ignore URL parsing error
+    }
+  }, [])
+
   // Lock scroll while gate is visible
   useEffect(() => {
     if (!isGone) {
@@ -109,6 +124,14 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
             <div className="card-filigree top-right">❦</div>
 
             <p className="gate-script-kicker">Save Our Date</p>
+
+            {guestName && (
+              <div className="gate-vip-guest-badge">
+                <span className="vip-badge-icon">💌</span>
+                <span>Kính gửi: <strong>{guestName}</strong></span>
+              </div>
+            )}
+
             <h2 className="gate-event-title">LỄ THÀNH HÔN</h2>
 
             <div className="gate-divider">

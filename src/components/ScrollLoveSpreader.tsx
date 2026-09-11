@@ -27,7 +27,6 @@ export default function ScrollLoveSpreader() {
 
     const spawnParticles = (count: number, side?: 'left' | 'right' | 'both') => {
       const newItems: LoveParticle[] = []
-      const currentScroll = window.scrollY
       const vh = window.innerHeight
       const vw = window.innerWidth
 
@@ -44,7 +43,7 @@ export default function ScrollLoveSpreader() {
           : vw - (Math.random() * (vw * 0.22) + 20)
 
         // Stagger along vertical center of viewport
-        const startY = currentScroll + (vh * 0.3) + Math.random() * (vh * 0.5)
+        const startY = (vh * 0.25) + Math.random() * (vh * 0.5)
 
         newItems.push({
           id: ++idCounter.current,
@@ -84,7 +83,7 @@ export default function ScrollLoveSpreader() {
   useEffect(() => {
     const handleTap = (clientX: number, clientY: number) => {
       const pageX = clientX
-      const pageY = window.scrollY + clientY
+      const pageY = clientY
       const newItems: LoveParticle[] = []
 
       // Burst 4 love particles on tap

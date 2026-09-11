@@ -91,7 +91,8 @@ export default function InvitationPage() {
             className="page-bg-image"
             src={config.backgroundImage}
             alt=""
-            loading="lazy"
+            loading="eager"
+            decoding="async"
           />
           <div className="page-bg-overlay" />
         </div>

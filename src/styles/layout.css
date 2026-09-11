@@ -13,26 +13,38 @@
 /* ── Background Layer ────────────────────────────────────── */
 .page-bg-layer {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  height: 100lvh;
+  min-height: -webkit-fill-available;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .page-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   filter: blur(2px) brightness(0.96) saturate(0.95);
-  transform: scale(1.02);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .page-bg-overlay {
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at center, rgba(255, 250, 251, 0.22) 0%, rgba(255, 245, 248, 0.38) 100%);
-  backdrop-filter: blur(0.5px);
-  -webkit-backdrop-filter: blur(0.5px);
 }
 
 /* ── Progress Bar ────────────────────────────────────────── */
@@ -556,19 +568,73 @@
   50% { transform: translateY(-8px) scale(1.1); opacity: 1; }
 }
 
-.music-hint {
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 56, 105, 0.2);
+/* Mini audio equalizer bars */
+.music-bars {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  padding: 2px 4px;
+  background: var(--accent);
   border-radius: 999px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 6px rgba(232, 23, 93, 0.4);
+}
+
+.mbar {
+  width: 2.5px;
+  background: #fff;
+  border-radius: 1px;
+  animation: barEqualize 0.8s ease-in-out infinite alternate;
+}
+
+.mbar.mb1 { height: 6px; animation-delay: 0.1s; }
+.mbar.mb2 { height: 11px; animation-delay: 0.3s; }
+.mbar.mb3 { height: 8px; animation-delay: 0.2s; }
+
+@keyframes barEqualize {
+  0% { height: 3px; }
+  100% { height: 11px; }
+}
+
+.music-note-muted {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 13px;
+}
+
+.music-song-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 56, 105, 0.25);
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   font-size: 12px;
   font-weight: 600;
   color: var(--accent);
   white-space: nowrap;
-  animation: bounceHint 1.5s infinite;
-  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.music-song-tag .song-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
 }
 
 @keyframes bounceHint {
