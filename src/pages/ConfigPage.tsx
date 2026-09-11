@@ -632,7 +632,13 @@ Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình ch
             <TextField cfg={config} set={set} label="Lời dẫn đầu mục thiệp" field="invitationIntro" rows={2} />
             <div className="cfg-grid-2">
               <TextField cfg={config} set={set} label="Nhãn sự kiện" field="eventBadge" placeholder="Ngày Nhà Gái" />
-              <TextField cfg={config} set={set} label="Ngày (dd/mm/yyyy)" field="eventDate" placeholder="03/05/2026" />
+              <DatePickerField
+                label="Ngày cưới chính (dd/mm/yyyy)"
+                value={config.eventDate}
+                onChange={(val) => set('eventDate', val)}
+                onWeekdayChange={(wd) => set('eventWeekday', wd)}
+                placeholder="02/05/2027"
+              />
               <TextField cfg={config} set={set} label="Giờ (HH:mm)" field="eventTime" placeholder="11:00" />
               <TextField cfg={config} set={set} label="Thứ" field="eventWeekday" placeholder="Chủ Nhật" />
             </div>
@@ -705,14 +711,13 @@ Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình ch
                   </div>
 
                   <div className="cfg-grid-3">
-                    <label className="cfg-field">
-                      <span>Ngày tổ chức (dd/mm/yyyy)</span>
-                      <input
-                        value={cur.date}
-                        onChange={(e) => updateParty(venuePartyTab, { date: e.target.value })}
-                        placeholder="02/05/2027"
-                      />
-                    </label>
+                    <DatePickerField
+                      label="Ngày tổ chức (dd/mm/yyyy)"
+                      value={cur.date}
+                      onChange={(val) => updateParty(venuePartyTab, { date: val })}
+                      onWeekdayChange={(wd) => updateParty(venuePartyTab, { weekday: wd })}
+                      placeholder="02/05/2027"
+                    />
                     <label className="cfg-field">
                       <span>Thứ trong tuần</span>
                       <input
@@ -798,13 +803,12 @@ Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình ch
               {config.timeline.map((item, i) => (
                 <div key={item.id} className="cfg-row">
                   <div className="cfg-grid-2">
-                    <label className="cfg-field">
-                      <span>Ngày</span>
-                      <input
-                        value={item.date}
-                        onChange={(e) => setTimelineField(item.id, 'date', e.target.value)}
-                      />
-                    </label>
+                    <DatePickerField
+                      label="Ngày (dd/mm/yyyy)"
+                      value={item.date}
+                      onChange={(val) => setTimelineField(item.id, 'date', val)}
+                      placeholder="02/05/2027"
+                    />
                     <label className="cfg-field">
                       <span>Giờ</span>
                       <input
@@ -1757,3 +1761,95 @@ function TextField({
     </label>
   )
 }
+
+function toInputDateFormat(dmyStr: string): string {
+  if (!dmyStr) return ''
+  const parts = dmyStr.trim().split('/')
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, '0')
+    const month = parts[1].padStart(2, '0')
+    const year = parts[2]
+    if (year.length === 4) {
+      return `${year}-${month}-${day}`
+    }
+  }
+  return ''
+}
+
+function fromInputDateFormat(ymdStr: string): string {
+  if (!ymdStr) return ''
+  const parts = ymdStr.trim().split('-')
+  if (parts.length === 3) {
+    const year = parts[0]
+    const month = parts[1]
+    const day = parts[2]
+    return `${day}/${month}/${year}`
+  }
+  return ymdStr
+}
+
+function getVietnameseWeekday(dateStr: string): string {
+  let date: Date | null = null
+  if (dateStr.includes('/')) {
+    const [d, m, y] = dateStr.split('/').map(Number)
+    date = new Date(y, m - 1, d)
+  } else if (dateStr.includes('-')) {
+    const [y, m, d] = dateStr.split('-').map(Number)
+    date = new Date(y, m - 1, d)
+  }
+  if (!date || isNaN(date.getTime())) return ''
+  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
+  return days[date.getDay()]
+}
+
+function DatePickerField({
+  label,
+  value,
+  onChange,
+  onWeekdayChange,
+  placeholder,
+}: {
+  label: string
+  value: string
+  onChange: (val: string) => void
+  onWeekdayChange?: (weekday: string) => void
+  placeholder?: string
+}) {
+  return (
+    <label className="cfg-field cfg-date-picker-field">
+      <span>{label}</span>
+      <div className="cfg-date-picker-group">
+        <input
+          type="text"
+          value={value}
+          placeholder={placeholder || 'DD/MM/YYYY'}
+          onChange={(e) => onChange(e.target.value)}
+          className="cfg-date-text-input"
+        />
+        <div className="cfg-calendar-btn-wrap">
+          <div className="cfg-calendar-trigger-btn">
+            <span>📅</span>
+            <span>Mở lịch</span>
+          </div>
+          <input
+            type="date"
+            className="cfg-hidden-date-picker"
+            value={toInputDateFormat(value)}
+            onChange={(e) => {
+              if (e.target.value) {
+                const dmy = fromInputDateFormat(e.target.value)
+                onChange(dmy)
+                if (onWeekdayChange) {
+                  const wd = getVietnameseWeekday(e.target.value)
+                  if (wd) onWeekdayChange(wd)
+                }
+              }
+            }}
+            title="Bấm để mở lịch chọn ngày"
+          />
+        </div>
+      </div>
+    </label>
+  )
+}
+

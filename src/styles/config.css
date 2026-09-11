@@ -854,4 +854,61 @@
   }
 }
 
+/* ── Date Picker Field Group ─────────────────────────────── */
+.cfg-date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.cfg-date-picker-group .cfg-date-text-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.cfg-calendar-btn-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cfg-calendar-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  height: 40px;
+  background: linear-gradient(135deg, #fff0f5, #ffe4ec);
+  border: 1px solid rgba(232, 23, 93, 0.35);
+  border-radius: 8px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.cfg-calendar-btn-wrap:hover .cfg-calendar-trigger-btn {
+  background: linear-gradient(135deg, #ffe4ec, #ffd1df);
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(232, 23, 93, 0.15);
+}
+
+.cfg-hidden-date-picker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 16px;
+}
+
+
 
