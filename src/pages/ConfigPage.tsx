@@ -17,6 +17,7 @@ import {
 } from '../remoteConfig'
 import { isGuest, leaveGuestMode } from '../viewMode'
 import { uploadImageToCloudinary, uploadAudioToCloudinary } from '../cloudinary'
+import { getVietnameseWeekday, getLunarDateString } from '../utils/lunar'
 import '../styles/layout.css'
 import '../styles/config.css'
 
@@ -632,17 +633,23 @@ Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình ch
             <TextField cfg={config} set={set} label="Lời dẫn đầu mục thiệp" field="invitationIntro" rows={2} />
             <div className="cfg-grid-2">
               <TextField cfg={config} set={set} label="Nhãn sự kiện" field="eventBadge" placeholder="Ngày Nhà Gái" />
-              <DatePickerField
-                label="Ngày cưới chính (dd/mm/yyyy)"
-                value={config.eventDate}
-                onChange={(val) => set('eventDate', val)}
-                onWeekdayChange={(wd) => set('eventWeekday', wd)}
-                placeholder="02/05/2027"
-              />
               <TextField cfg={config} set={set} label="Giờ (HH:mm)" field="eventTime" placeholder="11:00" />
-              <TextField cfg={config} set={set} label="Thứ" field="eventWeekday" placeholder="Chủ Nhật" />
             </div>
-            <TextField cfg={config} set={set} label="Ngày âm lịch" field="eventLunarDate" />
+            <DatePickerField
+              label="Ngày cưới chính (dd/mm/yyyy)"
+              value={config.eventDate}
+              weekday={config.eventWeekday}
+              lunarDate={config.eventLunarDate}
+              showAutoBadges={true}
+              onChange={(val, wd, lunar) => {
+                updateConfig({
+                  eventDate: val,
+                  ...(wd ? { eventWeekday: wd } : {}),
+                  ...(lunar ? { eventLunarDate: lunar } : {}),
+                })
+              }}
+              placeholder="02/05/2027"
+            />
             <h2 className="cfg-sub">Nhà trai / nhà gái</h2>
             <TextField cfg={config} set={set} label="Địa chỉ nhà trai" field="groomHouseAddress" rows={2} />
             <TextField cfg={config} set={set} label="Địa chỉ nhà gái" field="brideHouseAddress" rows={2} />
@@ -710,22 +717,22 @@ Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình ch
                     </label>
                   </div>
 
-                  <div className="cfg-grid-3">
+                  <div className="cfg-grid-2">
                     <DatePickerField
                       label="Ngày tổ chức (dd/mm/yyyy)"
                       value={cur.date}
-                      onChange={(val) => updateParty(venuePartyTab, { date: val })}
-                      onWeekdayChange={(wd) => updateParty(venuePartyTab, { weekday: wd })}
+                      weekday={cur.weekday}
+                      lunarDate={cur.lunarDate}
+                      showAutoBadges={true}
+                      onChange={(val, wd, lunar) => {
+                        updateParty(venuePartyTab, {
+                          date: val,
+                          ...(wd ? { weekday: wd } : {}),
+                          ...(lunar ? { lunarDate: lunar } : {}),
+                        })
+                      }}
                       placeholder="02/05/2027"
                     />
-                    <label className="cfg-field">
-                      <span>Thứ trong tuần</span>
-                      <input
-                        value={cur.weekday}
-                        onChange={(e) => updateParty(venuePartyTab, { weekday: e.target.value })}
-                        placeholder="Chủ Nhật"
-                      />
-                    </label>
                     <label className="cfg-field">
                       <span>Giờ tổ chức</span>
                       <input
@@ -735,15 +742,6 @@ Sự hiện diện của ${displayName} là niềm vinh hạnh cho gia đình ch
                       />
                     </label>
                   </div>
-
-                  <label className="cfg-field">
-                    <span>Ngày âm lịch</span>
-                    <input
-                      value={cur.lunarDate}
-                      onChange={(e) => updateParty(venuePartyTab, { lunarDate: e.target.value })}
-                      placeholder="Nhằm ngày 27 tháng 03 năm Đinh Mùi"
-                    />
-                  </label>
 
                   <label className="cfg-field">
                     <span>Tên nhà hàng / địa điểm</span>
@@ -1788,42 +1786,41 @@ function fromInputDateFormat(ymdStr: string): string {
   return ymdStr
 }
 
-function getVietnameseWeekday(dateStr: string): string {
-  let date: Date | null = null
-  if (dateStr.includes('/')) {
-    const [d, m, y] = dateStr.split('/').map(Number)
-    date = new Date(y, m - 1, d)
-  } else if (dateStr.includes('-')) {
-    const [y, m, d] = dateStr.split('-').map(Number)
-    date = new Date(y, m - 1, d)
-  }
-  if (!date || isNaN(date.getTime())) return ''
-  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
-  return days[date.getDay()]
-}
-
 function DatePickerField({
   label,
   value,
+  weekday,
+  lunarDate,
+  showAutoBadges = false,
   onChange,
-  onWeekdayChange,
   placeholder,
 }: {
   label: string
   value: string
-  onChange: (val: string) => void
-  onWeekdayChange?: (weekday: string) => void
+  weekday?: string
+  lunarDate?: string
+  showAutoBadges?: boolean
+  onChange: (val: string, autoWeekday?: string, autoLunar?: string) => void
   placeholder?: string
 }) {
+  const currentWeekday = weekday || getVietnameseWeekday(value)
+  const currentLunar = lunarDate || getLunarDateString(value)
+
+  const handleDateChange = (newVal: string) => {
+    const autoWd = getVietnameseWeekday(newVal)
+    const autoLunar = getLunarDateString(newVal)
+    onChange(newVal, autoWd, autoLunar)
+  }
+
   return (
-    <label className="cfg-field cfg-date-picker-field">
-      <span>{label}</span>
+    <div className="cfg-field cfg-date-picker-field">
+      <span className="cfg-field-label">{label}</span>
       <div className="cfg-date-picker-group">
         <input
           type="text"
           value={value}
           placeholder={placeholder || 'DD/MM/YYYY'}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => handleDateChange(e.target.value)}
           className="cfg-date-text-input"
         />
         <div className="cfg-calendar-btn-wrap">
@@ -1838,18 +1835,29 @@ function DatePickerField({
             onChange={(e) => {
               if (e.target.value) {
                 const dmy = fromInputDateFormat(e.target.value)
-                onChange(dmy)
-                if (onWeekdayChange) {
-                  const wd = getVietnameseWeekday(e.target.value)
-                  if (wd) onWeekdayChange(wd)
-                }
+                handleDateChange(dmy)
               }
             }}
             title="Bấm để mở lịch chọn ngày"
           />
         </div>
       </div>
-    </label>
+      {showAutoBadges && (currentWeekday || currentLunar) ? (
+        <div className="cfg-date-auto-pill" title="Tự động tính thứ và ngày âm lịch">
+          {currentWeekday && (
+            <span className="cfg-pill-item">
+              <span>🗓️ Thứ: <strong>{currentWeekday}</strong></span>
+            </span>
+          )}
+          {currentWeekday && currentLunar && <span className="cfg-pill-sep">•</span>}
+          {currentLunar && (
+            <span className="cfg-pill-item">
+              <span>🌙 Âm lịch: <strong>{currentLunar}</strong></span>
+            </span>
+          )}
+        </div>
+      ) : null}
+    </div>
   )
 }
 
