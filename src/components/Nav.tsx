@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useConfigStore } from '../store'
+import { coupleMonogram } from '../utils/initials'
 
 const SECTIONS = [
   { id: 'home', label: 'Trang Chủ', icon: '🏠' },
@@ -17,10 +18,7 @@ export default function Nav() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  // Derive initials, e.g., "T" from "Quốc Thịnh" & "N" from "Giai Nhân"
-  const groomInitial = config.groomName ? config.groomName.trim().slice(-1).toUpperCase() : 'T'
-  const brideInitial = config.brideName ? config.brideName.trim().slice(-1).toUpperCase() : 'N'
-  const monogram = `${groomInitial} ♡ ${brideInitial}`
+  const monogram = coupleMonogram(config.groomName, config.brideName)
 
   useEffect(() => {
     const handleScroll = () => {

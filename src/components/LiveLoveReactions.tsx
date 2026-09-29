@@ -34,15 +34,6 @@ const HEART_COLORS = [
 const HEART_ICONS = ['❤️', '💖', '💕', '💗', '💓', '✨', '💐']
 
 export default function LiveLoveReactions() {
-  const [count, setCount] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem('wedding_love_count')
-      return saved ? parseInt(saved, 10) : 520
-    } catch {
-      return 520
-    }
-  })
-
   const [floaters, setFloaters] = useState<FloatingLove[]>([])
   const [isPulsing, setIsPulsing] = useState(false)
   const idCounter = useRef(0)
@@ -58,14 +49,6 @@ export default function LiveLoveReactions() {
     setTimeout(() => setIsPulsing(false), 200)
 
     tapCount.current += 1
-    const newCount = count + 1
-    setCount(newCount)
-    try {
-      localStorage.setItem('wedding_love_count', String(newCount))
-    } catch {
-      // Ignore storage errors
-    }
-
     const newItems: FloatingLove[] = []
 
     // 1. Always spawn 3-4 flying hearts
@@ -138,7 +121,6 @@ export default function LiveLoveReactions() {
       >
         <span className="live-love-icon">💖</span>
         <span className="live-love-text">Chúc Phúc</span>
-        <span className="live-love-badge">{count.toLocaleString('vi-VN')}</span>
       </button>
     </div>
   )

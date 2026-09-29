@@ -116,7 +116,7 @@ export default function Rsvp() {
           <Confetti active={status === 'ok'} />
 
           <div className="rsvp-card-head">
-            <span className="rsvp-card-badge">💌 RSVP</span>
+            <span className="rsvp-card-badge"><span className="emoji-lead" aria-hidden="true">💌</span>RSVP</span>
             <h3>Thông Tin Khách Mời</h3>
             <p className="rsvp-card-subtitle">Vui lòng điền thông tin bên dưới</p>
           </div>
@@ -218,7 +218,7 @@ export default function Rsvp() {
                 <span className="btn-spinner" /> Đang gửi xác nhận...
               </span>
             ) : (
-              <span>✉️ Gửi Xác Nhận Tham Dự</span>
+              <span><span className="emoji-lead" aria-hidden="true">✉️</span>Gửi Xác Nhận Tham Dự</span>
             )}
           </button>
 
@@ -247,7 +247,7 @@ export default function Rsvp() {
         {/* Gift Box Column */}
         <aside className="card gift-card reveal">
           <div className="gift-card-head">
-            <span className="gift-badge">🎁 HỘP MỪNG CƯỚI</span>
+            <span className="gift-badge"><span className="emoji-lead" aria-hidden="true">🎁</span>HỘP MỪNG CƯỚI</span>
             <h3>Gửi Quà Chúc Phúc</h3>
           </div>
 
@@ -295,7 +295,13 @@ export default function Rsvp() {
                   onClick={() => copy('stk', config.bankAccount)}
                   title="Sao chép số tài khoản"
                 >
-                  {copied === 'stk' ? '✓ Đã chép' : '📋 Sao chép'}
+                  {copied === 'stk' ? (
+                    '✓ Đã chép'
+                  ) : (
+                    <>
+                      <span className="emoji-lead" aria-hidden="true">📋</span>Sao chép
+                    </>
+                  )}
                 </button>
               </dd>
             </div>
@@ -310,7 +316,7 @@ export default function Rsvp() {
                     className="call-chip"
                     title="Gọi điện trực tiếp"
                   >
-                    📞 Gọi ngay
+                    <span className="emoji-lead" aria-hidden="true">📞</span>Gọi ngay
                   </a>
                 </dd>
               </div>

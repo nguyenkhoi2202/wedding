@@ -61,7 +61,7 @@ export default function Couple() {
               Bà <strong>{config.groomMother}</strong>
             </p>
             <p className="hometown-badge">
-              <span>📍 {config.groomHometown}</span>
+              <span><span className="emoji-lead" aria-hidden="true">📍</span>{config.groomHometown}</span>
             </p>
           </div>
         </article>
@@ -102,7 +102,7 @@ export default function Couple() {
               Bà <strong>{config.brideMother}</strong>
             </p>
             <p className="hometown-badge">
-              <span>📍 {config.brideHometown}</span>
+              <span><span className="emoji-lead" aria-hidden="true">📍</span>{config.brideHometown}</span>
             </p>
           </div>
         </article>

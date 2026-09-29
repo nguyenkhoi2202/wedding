@@ -916,15 +916,6 @@
   letter-spacing: 0.5px;
 }
 
-.live-love-badge {
-  background: rgba(255, 255, 255, 0.28);
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
 @media (max-width: 480px) {
   .live-love-widget {
     right: 14px;

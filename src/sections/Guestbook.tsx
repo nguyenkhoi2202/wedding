@@ -94,7 +94,7 @@ export default function Guestbook() {
 
         {submitted && (
           <div className="guestbook-toast success">
-            <span>🎉 Cảm ơn bạn! Lời chúc của bạn đã được ghim lên sổ lưu bút!</span>
+            <span><span className="emoji-lead" aria-hidden="true">🎉</span>Cảm ơn bạn! Lời chúc của bạn đã được ghim lên sổ lưu bút!</span>
           </div>
         )}
 
@@ -158,7 +158,7 @@ export default function Guestbook() {
           </div>
 
           <button type="submit" className="btn btn-primary btn-submit-wish">
-            <span>✍️ Ký Tên &amp; Ghim Lời Chúc</span>
+            <span><span className="emoji-lead" aria-hidden="true">✍️</span>Ký Tên &amp; Ghim Lời Chúc</span>
           </button>
         </form>
       </div>

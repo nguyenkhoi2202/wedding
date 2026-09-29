@@ -69,10 +69,16 @@ export default function Venue() {
   const grabUrl = `https://grab.onelink.me/2695613898?pid=wedding&af_dp=grab%3A%2F%2Fopen%3FscreenType%3DTRANSPORT`
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(currentParty.venueAddress).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2600)
-    })
+    navigator.clipboard
+      .writeText(currentParty.venueAddress)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2600)
+      })
+      .catch(() => {
+        // Trình duyệt chặn clipboard (http, in-app browser): hiện hộp thoại để khách tự chép.
+        window.prompt('Sao chép địa chỉ:', currentParty.venueAddress)
+      })
   }
 
   // Google Maps Embed URL
@@ -151,7 +157,10 @@ export default function Venue() {
             onClick={handleCopyAddress}
             title="Sao chép địa chỉ vào bộ nhớ tạm"
           >
-            <span>{copied ? '✓ Đã sao chép địa chỉ!' : '📋 Sao chép địa chỉ'}</span>
+            <span>
+              {!copied && <span className="emoji-lead" aria-hidden="true">📋</span>}
+              {copied ? '✓ Đã sao chép địa chỉ!' : 'Sao chép địa chỉ'}
+            </span>
           </button>
         </div>
 

@@ -75,7 +75,10 @@ export default function Invitation() {
       {/* Main Date Card */}
       <div className="date-card card reveal">
         <div className="date-card-header">
-          <span className="date-badge">💗 {activeBadge.toUpperCase()}</span>
+          <span className="date-badge">
+            <span className="emoji-lead" aria-hidden="true">💗</span>
+            {activeBadge.toUpperCase()}
+          </span>
         </div>
 
         {/* 3-column unified calendar bar that stays on 1 row cleanly */}
@@ -99,7 +102,10 @@ export default function Invitation() {
 
         {/* Weekday & Lunar Date Details */}
         <div className="date-weekday">
-          <h3>🗓️ {activeWeekday}</h3>
+          <h3>
+            <span className="emoji-lead" aria-hidden="true">🗓️</span>
+            {activeWeekday}
+          </h3>
           <div className="weekday-divider" />
           <p className="solar-date">
             Ngày {Number(day)} tháng {Number(month)} năm {year}
@@ -118,16 +124,16 @@ export default function Invitation() {
                 className="btn-add-calendar"
                 onClick={() => setShowCalMenu(!showCalMenu)}
               >
-                <span>📅 Nhắc Tôi Vào Lịch Điện Thoại</span>
+                <span><span className="emoji-lead" aria-hidden="true">📅</span>Nhắc Tôi Vào Lịch Điện Thoại</span>
               </button>
 
               {showCalMenu && (
                 <div className="cal-dropdown-menu fade-in">
                   <button type="button" onClick={handleGoogleCal}>
-                    <span>📅 Thêm vào Google Calendar</span>
+                    <span><span className="emoji-lead" aria-hidden="true">📅</span>Thêm vào Google Calendar</span>
                   </button>
                   <button type="button" onClick={handleIcsCal}>
-                    <span>🍏 Thêm vào Apple / Outlook (.ics)</span>
+                    <span><span className="emoji-lead" aria-hidden="true">🍏</span>Thêm vào Apple / Outlook (.ics)</span>
                   </button>
                 </div>
               )}

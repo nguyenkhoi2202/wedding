@@ -197,7 +197,7 @@ export const defaultConfig: WeddingConfig = {
       date: '02/05/2027',
       time: '10:00',
       title: 'Lễ Vu Quy Nhà Gái',
-      note: 'Nhằm ngày 27 tháng 03 năm Đinh Mùi',
+      note: 'Nhằm ngày 26 tháng 03 năm Đinh Mùi',
     },
     {
       id: 't2',

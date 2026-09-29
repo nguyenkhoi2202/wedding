@@ -12,10 +12,21 @@ function parseEventDateTime(dateStr: string, timeStr: string): { start: Date; en
   const hours = Number(timeParts[0]) || 11
   const minutes = Number(timeParts[1]) || 0
 
-  const start = new Date(year, month - 1, day, hours, minutes, 0)
+  // Đám cưới diễn ra ở Việt Nam (UTC+7): cố định múi giờ để khách ở nước ngoài
+  // không bị lệch giờ khi thêm vào lịch.
+  const start = new Date(Date.UTC(year, month - 1, day, hours - 7, minutes, 0))
   // Default wedding duration: 4 hours
   const end = new Date(start.getTime() + 4 * 60 * 60 * 1000)
   return { start, end }
+}
+
+/** Escape theo RFC 5545 để dấu phẩy, chấm phẩy, xuống dòng không làm hỏng file .ics. */
+function escapeIcsText(text: string): string {
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/\r?\n/g, '\\n')
+    .replace(/,/g, '\\,')
+    .replace(/;/g, '\\;')
 }
 
 function toGoogleDateString(date: Date): string {
@@ -67,9 +78,11 @@ export function downloadIcsFile({
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `SUMMARY:${title}`,
-    `DESCRIPTION:${details.replace(/\n/g, '\\n')}`,
-    `LOCATION:${location}`,
+    `UID:${toGoogleDateString(start)}-${Math.random().toString(36).slice(2, 10)}@thiep-cuoi`,
+    `DTSTAMP:${toGoogleDateString(new Date())}`,
+    `SUMMARY:${escapeIcsText(title)}`,
+    `DESCRIPTION:${escapeIcsText(details)}`,
+    `LOCATION:${escapeIcsText(location)}`,
     `DTSTART:${toGoogleDateString(start)}`,
     `DTEND:${toGoogleDateString(end)}`,
     'STATUS:CONFIRMED',

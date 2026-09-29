@@ -23,33 +23,23 @@ export default function Hero() {
     }
   }
 
+  // Một nguồn dữ liệu cho cả Google Calendar và .ics, theo đúng bên đang được mời.
+  const calendarEvent = () => ({
+    title: `${activeParty?.title || 'Lễ Cưới'}: ${config.groomName} & ${config.brideName}`,
+    details: `${config.invitationIntro}\n${config.invitationMessage}`,
+    location: `${activeParty?.venueName || config.venueName}, ${activeParty?.venueAddress || config.venueAddress}`,
+    dateStr: activeParty?.date || config.eventDate,
+    timeStr: activeParty?.time || config.eventTime,
+  })
+
   const handleGoogleCal = () => {
     setShowCalMenu(false)
-    const activeDate = activeParty?.date || config.eventDate
-    const activeTime = activeParty?.time || config.eventTime
-    const activeVenue = activeParty?.venueName || config.venueName
-    const activeAddress = activeParty?.venueAddress || config.venueAddress
-    const activeTitle = activeParty?.title || 'Lễ Cưới'
-
-    const url = getGoogleCalendarUrl({
-      title: `${activeTitle}: ${config.groomName} & ${config.brideName}`,
-      details: `${config.invitationIntro}\n${config.invitationMessage}`,
-      location: `${activeVenue}, ${activeAddress}`,
-      dateStr: activeDate,
-      timeStr: activeTime,
-    })
-    window.open(url, '_blank', 'noopener,noreferrer')
+    window.open(getGoogleCalendarUrl(calendarEvent()), '_blank', 'noopener,noreferrer')
   }
 
   const handleIcsCal = () => {
     setShowCalMenu(false)
-    downloadIcsFile({
-      title: `Lễ Cưới: ${config.groomName} & ${config.brideName}`,
-      details: `${config.invitationIntro}\n${config.invitationMessage}`,
-      location: `${config.venueName}, ${config.venueAddress}`,
-      dateStr: config.eventDate,
-      timeStr: config.eventTime,
-    })
+    downloadIcsFile(calendarEvent())
   }
 
   return (
@@ -102,7 +92,7 @@ export default function Hero() {
             <div className="photo-flourish" />
           </div>
           <figcaption>{config.groomName}</figcaption>
-          <span className="hero-role-pill groom-pill">Chú Rể</span>
+          <span className="hero-role-pill groom-pill">{config.groomRole}</span>
         </figure>
 
         <div className="hero-hearts" aria-hidden="true">
@@ -120,7 +110,7 @@ export default function Hero() {
             <div className="photo-flourish" />
           </div>
           <figcaption>{config.brideName}</figcaption>
-          <span className="hero-role-pill bride-pill">Cô Dâu</span>
+          <span className="hero-role-pill bride-pill">{config.brideRole}</span>
         </figure>
       </div>
 
@@ -140,7 +130,8 @@ export default function Hero() {
           className="btn btn-primary hero-btn-rsvp"
           onClick={() => go('rsvp')}
         >
-          <span>✉️ Xác Nhận Tham Dự</span>
+          <span className="btn-icon" aria-hidden="true">✉️</span>
+          <span>Xác Nhận Tham Dự</span>
         </button>
 
         <button
@@ -148,7 +139,8 @@ export default function Hero() {
           className="btn btn-ghost"
           onClick={() => go('invitation')}
         >
-          <span>💌 Xem Thiệp Mời</span>
+          <span className="btn-icon" aria-hidden="true">💌</span>
+          <span>Xem Thiệp Mời</span>
         </button>
 
         {/* Save to Calendar Button */}
@@ -159,7 +151,8 @@ export default function Hero() {
             onClick={() => setShowCalMenu(!showCalMenu)}
             aria-expanded={showCalMenu}
           >
-            <span>📅 Lưu Vào Lịch</span>
+            <span className="btn-icon" aria-hidden="true">📅</span>
+            <span>Lưu Vào Lịch</span>
           </button>
 
           {showCalMenu && (

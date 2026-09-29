@@ -29,11 +29,13 @@ import '../styles/guestbook.css'
 import '../styles/rsvp.css'
 import '../styles/animations.css'
 import '../styles/gate.css'
+import '../styles/polish.css'
 
 export default function InvitationPage() {
   const { config } = useConfigStore()
   const [scrollProgress, setScrollProgress] = useState(0)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [opened, setOpened] = useState(false)
 
   useReveal([config])
 
@@ -56,12 +58,13 @@ export default function InvitationPage() {
   }
 
   return (
-    <div className="wedding-app-wrapper">
+    <div className={`wedding-app-wrapper ${opened ? 'is-opened' : ''}`}>
       <style>{`:root{--accent:${config.accentColor};--bg:${config.backgroundColor};}`}</style>
 
       {/* Cổng hoa đón khách & mở thiệp cưới hoàng gia */}
       <WeddingGate
         onOpen={() => {
+          setOpened(true)
           // Dispatches custom event to guarantee immediate audio playback on tap
           window.dispatchEvent(new CustomEvent('wedding:play-music'))
         }}

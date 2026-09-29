@@ -36,15 +36,21 @@ export default function CelebrationCannon() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let width = (canvas.width = window.innerWidth)
-    let height = (canvas.height = window.innerHeight)
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let width = window.innerWidth
+    let height = window.innerHeight
 
     const handleResize = () => {
-      if (!canvas) return
-      width = canvas.width = window.innerWidth
-      height = canvas.height = window.innerHeight
+      width = window.innerWidth
+      height = window.innerHeight
+      canvas.width = Math.round(width * dpr)
+      canvas.height = Math.round(height * dpr)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
+    handleResize()
     window.addEventListener('resize', handleResize)
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const spawnBlast = (originX: number, originY: number, count: number, angleMin: number, angleMax: number) => {
       const newParticles: Particle[] = []
@@ -70,6 +76,8 @@ export default function CelebrationCannon() {
         })
       }
       particlesRef.current.push(...newParticles)
+      // Vòng lặp chỉ chạy khi còn hạt, không đốt CPU lúc rảnh.
+      if (animIdRef.current === null) animIdRef.current = requestAnimationFrame(render)
     }
 
     const fireDoubleCannon = () => {
@@ -82,6 +90,7 @@ export default function CelebrationCannon() {
     }
 
     const onCelebrateEvent = (e: Event) => {
+      if (reducedMotion) return
       const customEvent = e as CustomEvent<{ x?: number; y?: number }>
       if (customEvent.detail && typeof customEvent.detail.x === 'number') {
         spawnBlast(
@@ -133,8 +142,6 @@ export default function CelebrationCannon() {
         ctx.rotate(p.rotation)
         ctx.globalAlpha = Math.max(0, p.opacity)
         ctx.fillStyle = p.color
-        ctx.shadowColor = p.color
-        ctx.shadowBlur = 4
 
         if (p.shape === 'rect') {
           ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.6)
@@ -151,10 +158,9 @@ export default function CelebrationCannon() {
         ctx.restore()
       }
 
-      animIdRef.current = requestAnimationFrame(render)
+      animIdRef.current =
+        particles.length > 0 ? requestAnimationFrame(render) : null
     }
-
-    render()
 
     return () => {
       window.removeEventListener('resize', handleResize)

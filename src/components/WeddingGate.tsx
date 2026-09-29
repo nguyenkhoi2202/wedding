@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useConfigStore } from '../store'
+import { coupleMonogram } from '../utils/initials'
 
 interface WeddingGateProps {
   onOpen: () => void
@@ -10,10 +11,7 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
   const [isOpening, setIsOpening] = useState(false)
   const [isGone, setIsGone] = useState(false)
 
-  // Couple initials
-  const groomInitial = config.groomName ? config.groomName.trim().slice(-1).toUpperCase() : 'T'
-  const brideInitial = config.brideName ? config.brideName.trim().slice(-1).toUpperCase() : 'N'
-  const monogram = `${groomInitial} ♡ ${brideInitial}`
+  const monogram = coupleMonogram(config.groomName, config.brideName)
 
   // Personalized guest name & side from URL params
   const [guestName, setGuestName] = useState<string>('')
@@ -183,7 +181,10 @@ export default function WeddingGate({ onOpen }: WeddingGateProps) {
             </h1>
 
             <div className="gate-date-badge">
-              <span>🗓️ {partyInfo.weekday} • {partyInfo.date}</span>
+              <span>
+                <span className="emoji-lead" aria-hidden="true">🗓️</span>
+                {partyInfo.weekday} • {partyInfo.date}
+              </span>
             </div>
 
             <p className="gate-welcome-note">

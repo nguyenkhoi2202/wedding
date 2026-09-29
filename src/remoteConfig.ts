@@ -41,7 +41,13 @@ export async function fetchRemoteConfig(id: string): Promise<RemoteConfig | null
   if (res.status === 404) return null
   if (!res.ok) throw new RemoteError(await readError(res, 'Không tải được cấu hình'), res.status)
 
-  const data = (await res.json()) as RemoteConfig
+  // Khi chạy dev (không có /api) server trả về mã nguồn thay vì JSON.
+  let data: RemoteConfig
+  try {
+    data = (await res.json()) as RemoteConfig
+  } catch {
+    throw new RemoteError('Máy chủ trả về dữ liệu không hợp lệ, vui lòng thử lại sau', res.status)
+  }
   if (!data?.config) return null
   return { config: data.config, updatedAt: data.updatedAt ?? 0 }
 }
